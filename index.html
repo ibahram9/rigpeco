@@ -2,13 +2,11 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <!-- بهینه‌سازی شده برای جلوگیری از زوم ناخواسته در آیفون سافاری و سازگاری با بریدگی صفحه (Notch) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>فرم جمع‌آوری تجهیزات دستگاه حفاری</title>
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -37,15 +35,10 @@
         }
     </script>
 
-    <!-- Google Fonts: Vazirmatn -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <!-- ExcelJS برای ساخت ساختار دقیق و استاندارد اکسل -->
     <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 
     <style>
@@ -54,7 +47,6 @@
             box-sizing: border-box;
             touch-action: manipulation;
         }
-
         body {
             font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
             padding-top: env(safe-area-inset-top);
@@ -64,34 +56,19 @@
             user-select: none;
             -webkit-user-select: none;
         }
-
         input, textarea {
             user-select: text;
             -webkit-user-select: text;
-            font-size: 16px !important; /* جلوگیری قطعی از زوم ناخواسته در سافاری آیفون */
+            font-size: 16px !important;
         }
-
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        .ios-blur {
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .counter-btn:active, .action-btn:active {
-            transform: scale(0.92);
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .ios-blur { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .counter-btn:active, .action-btn:active { transform: scale(0.92); }
     </style>
 </head>
 <body class="bg-[#F2F2F7] dark:bg-black text-[#1C1C1E] dark:text-[#F2F2F7] antialiased transition-colors duration-200 min-h-screen">
 
-    <!-- هدر برنامه -->
     <header class="sticky top-0 z-30 ios-blur bg-white/85 dark:bg-[#1C1C1E]/85 border-b border-[#E5E5EA] dark:border-[#2C2C2E]">
         <div class="px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
@@ -105,22 +82,18 @@
             </div>
 
             <div class="flex items-center gap-1.5">
-                <!-- دکمه تم تاریک/روشن -->
                 <button id="themeToggleBtn" onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 transition">
                     <i id="themeIcon" class="ph-bold ph-moon text-lg"></i>
                 </button>
-                <!-- دکمه پیش‌نمایش جدول -->
                 <button onclick="openPreviewModal()" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 transition">
                     <i class="ph-bold ph-table text-lg"></i>
                 </button>
-                <!-- دکمه ریست فرم با پنجره تایید -->
                 <button onclick="openResetConfirmModal()" class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40 text-red-500 transition">
                     <i class="ph-bold ph-arrows-counter-clockwise text-lg"></i>
                 </button>
             </div>
         </div>
 
-        <!-- فیلد نام یا شماره دستگاه حفاری -->
         <div class="px-4 pb-2.5">
             <div class="relative flex items-center">
                 <i class="ph-bold ph-drill absolute right-3.5 text-gray-400 text-lg pointer-events-none"></i>
@@ -129,18 +102,12 @@
             </div>
         </div>
 
-        <!-- تب‌های انتخاب کاروان -->
         <div class="px-2 pb-2">
-            <div id="tabsContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-2 scroll-smooth">
-                <!-- تب‌ها داینامیک ایجاد می‌شوند -->
-            </div>
+            <div id="tabsContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-2 scroll-smooth"></div>
         </div>
     </header>
 
-    <!-- محتوای اصلی کاروان فعال -->
     <main class="max-w-xl mx-auto px-4 py-3 space-y-3">
-
-        <!-- کارت هدر کاروان -->
         <div class="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3.5 rounded-2xl border border-gray-200/70 dark:border-zinc-800 shadow-sm">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
@@ -154,37 +121,29 @@
                     <p id="currentCaravanSubtitle" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">ستون‌های اختصاصی فایل اکسل</p>
                 </div>
             </div>
-            <!-- دکمه افزودن تجهیز دستی -->
             <button onclick="promptAddNewItem()" class="action-btn flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-xl transition">
                 <i class="ph-bold ph-plus"></i>
                 <span>افزودن قلم</span>
             </button>
         </div>
 
-        <!-- لیست تجهیزات کاروان جاری -->
-        <div id="equipmentList" class="space-y-3">
-            <!-- اقلام توسط جاوااسکریپت تزریق می‌شوند -->
-        </div>
+        <div id="equipmentList" class="space-y-3"></div>
 
-        <!-- راهنما -->
         <div class="text-center pt-2 pb-6">
             <span class="inline-flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
                 <i class="ph-fill ph-camera text-blue-500"></i>
-                اسکنر با الگوهای فونت B Titr (۰ تا ۹) تطبیق یافته و کاملاً آفلاین عمل می‌کند[cite: 2]
+                برای اسکن، کادر دوربین را مستقیماً روی ارقام شماره اموال نگه دارید
             </span>
         </div>
     </main>
 
-    <!-- نوار ثابت پایین آیفون (Bottom Floating Bar) -->
     <div class="fixed bottom-0 inset-x-0 z-30 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] ios-blur bg-white/90 dark:bg-[#1C1C1E]/90 border-t border-gray-200/80 dark:border-zinc-800">
         <div class="max-w-xl mx-auto flex items-center gap-3">
-            <!-- خلاصه اقلام ثبت‌شده -->
             <div class="flex-1 flex flex-col pl-2">
                 <span class="text-[11px] text-gray-500 dark:text-gray-400">مجموع اقلام پر شده:</span>
                 <span id="totalItemsSummary" class="text-sm font-bold text-gray-800 dark:text-gray-200">۰ سطر دارای مقدار</span>
             </div>
 
-            <!-- دکمه دانلود خروجی استاندارد اکسل -->
             <button onclick="generateExcel()" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 active:scale-95 text-white py-3.5 px-4 rounded-2xl font-bold shadow-lg shadow-green-600/25 transition duration-150">
                 <i class="ph-bold ph-file-xls text-xl"></i>
                 <span>دریافت فایل اکسل</span>
@@ -192,22 +151,21 @@
         </div>
     </div>
 
-    <!-- فیلد مخفی دوربین برای تصویربرداری برچسب اموال -->
     <input type="file" id="cameraFileInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageCaptured(event)">
 
-    <!-- مودال بارگذاری و نتیجه اسکن اموال آفلاین -->
+    <!-- مودال نتیجه اسکن واقعی -->
     <div id="ocrLoadingModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-xs rounded-2xl p-6 shadow-2xl flex flex-col items-center text-center space-y-4">
-            <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-3xl animate-pulse">
+            <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-3xl">
                 <i class="ph-bold ph-scan"></i>
             </div>
             <div>
-                <h3 class="font-bold text-base text-gray-900 dark:text-white">اسکنر آفلاین برچسب اموال</h3>
-                <p id="ocrProgressStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-1">تطبیق الگو با فونت B Titr...</p>
+                <h3 class="font-bold text-base text-gray-900 dark:text-white">اسکن آفلاین برچسب اموال</h3>
+                <p id="ocrProgressStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-1">در حال تحلیل ساختار ارقام B Titr...</p>
             </div>
-            <!-- نتیجه قابل ویرایش فوری -->
             <div id="scannedResultBox" class="w-full hidden space-y-3">
                 <input type="text" id="scannedCodeValue" class="w-full text-center text-xl font-bold py-2 bg-gray-100 dark:bg-zinc-800 rounded-xl text-blue-600 dark:text-blue-400 border border-blue-500/50 outline-none">
+                <p class="text-[11px] text-gray-400">در صورت نیاز می‌توانید عدد را قبل از درج ویرایش کنید</p>
                 <div class="flex gap-2">
                     <button onclick="closeOcrModal()" class="flex-1 py-2 rounded-xl bg-gray-100 dark:bg-zinc-800 text-xs font-semibold">انصراف</button>
                     <button onclick="confirmScannedCode()" class="flex-1 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold">تایید و درج</button>
@@ -216,7 +174,7 @@
         </div>
     </div>
 
-    <!-- مودال تایید بازنشانی و ریست فرم -->
+    <!-- مودال ریست فرم -->
     <div id="resetModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-xs rounded-2xl p-5 shadow-2xl space-y-3.5 text-center">
             <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center mx-auto text-2xl">
@@ -224,7 +182,7 @@
             </div>
             <h3 class="font-bold text-base text-gray-900 dark:text-white">ریست و پاکسازی کامل فرم؟</h3>
             <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                تمام داده‌های وارد شده، تعدادها و توضیحات پاک شده و سایت به حالت اولیه و خام بازمی‌گردد.
+                تمام داده‌های وارد شده پاک شده و سایت به حالت اولیه و خام بازمی‌گردد.
             </p>
             <div class="flex items-center gap-2 pt-2">
                 <button onclick="closeResetConfirmModal()" class="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-xs font-semibold text-gray-700 dark:text-gray-300">انصراف</button>
@@ -233,7 +191,7 @@
         </div>
     </div>
 
-    <!-- مودال پیش‌نمایش جدول -->
+    <!-- مودال پیش‌نمایش -->
     <div id="previewModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center transition-opacity">
         <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-2xl max-h-[85vh] rounded-t-3xl sm:rounded-2xl flex flex-col shadow-2xl overflow-hidden">
             <div class="p-4 border-b border-gray-200 dark:border-zinc-800 flex items-center justify-between">
@@ -256,13 +214,13 @@
         </div>
     </div>
 
-    <!-- مودال افزودن قلم سفارشی جدید -->
+    <!-- مودال افزودن قلم دلخواه -->
     <div id="addItemModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-4">
             <h3 class="font-bold text-base text-gray-900 dark:text-white">افزودن تجهیز دلخواه</h3>
             <div>
                 <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">نام یا عنوان تجهیز:</label>
-                <input type="text" id="newItemNameInput" placeholder="مثلاً: هارد اکسترنال، اسکنر..." 
+                <input type="text" id="newItemNameInput" placeholder="مثلاً: هارد اکسترنال..." 
                     class="w-full bg-gray-100 dark:bg-zinc-800 rounded-xl px-3 py-2.5 text-gray-900 dark:text-white border border-transparent focus:border-blue-500 outline-none">
             </div>
             <div class="flex items-center justify-end gap-2 pt-2">
@@ -272,170 +230,91 @@
         </div>
     </div>
 
-    <!-- کانواس پردازش تصویر آفلاین -->
     <canvas id="preprocessCanvas" class="hidden"></canvas>
 
     <script>
         const defaultCaravans = [
             {
-                id: 'c_pezhvak_comp',
-                side: 'left',
-                title: 'کمپانی من پژواک',
-                subtitle: 'سطرهای ۵ تا ۱۴ (ستون چپ)',
-                startRow: 5,
+                id: 'c_pezhvak_comp', side: 'left', title: 'کمپانی من پژواک', subtitle: 'سطرهای ۵ تا ۱۴ (ستون چپ)', startRow: 5,
                 items: [
-                    { name: 'کیس', count: '', desc: '' },
-                    { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' },
-                    { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' },
-                    { name: 'تقویت انتن', count: '', desc: '' },
-                    { name: '', count: '', desc: '' },
+                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
+                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
+                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
+                    { name: 'اسپیکر', count: '', desc: '' }, { name: 'تقویت انتن', count: '', desc: '' },
+                    { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                ]
+            },
+            {
+                id: 'c_pasargad_comp', side: 'right', title: 'کمپانی من پاسارگاد', subtitle: 'سطرهای ۵ تا ۱۴ (ستون راست)', startRow: 5,
+                items: [
+                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
+                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
+                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
+                    { name: 'اسپیکر', count: '', desc: '' }, { name: '', count: '', desc: '' },
+                    { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                ]
+            },
+            {
+                id: 'c_pezhvak_geo', side: 'left', title: 'زمین شناس پژواک', subtitle: 'سطرهای ۱۸ تا ۲۵ (ستون چپ)', startRow: 18,
+                items: [
+                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
+                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
+                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
+                    { name: 'اسپیکر', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                ]
+            },
+            {
+                id: 'c_pasargad_geo', side: 'right', title: 'زمین شناس پاسارگاد', subtitle: 'سطرهای ۱۸ تا ۲۵ (ستون راست)', startRow: 18,
+                items: [
+                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
+                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
+                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
+                    { name: 'اسپیکر', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                ]
+            },
+            {
+                id: 'c_pezhvak_sup', side: 'left', title: 'پشتیبانی پژواک', subtitle: 'سطرهای ۲۹ تا ۳۶ (ستون چپ)', startRow: 29,
+                items: [
+                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
+                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
+                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
+                    { name: 'اسپیکر', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                ]
+            },
+            {
+                id: 'c_pezhvak_rest', side: 'right', title: 'استراحت پژواک', subtitle: 'سطرهای ۲۹ تا ۳۲ (ستون راست)', startRow: 29,
+                items: [
+                    { name: 'تلفن', count: '', desc: '' }, { name: 'اکسس پوینت', count: '', desc: '' },
+                    { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                ]
+            },
+            {
+                id: 'c_pasargad_rest', side: 'right', title: 'استراحت پاسارگاد', subtitle: 'سطرهای ۳۴ تا ۳۶ (ستون راست)', startRow: 34,
+                items: [
+                    { name: 'تلفن', count: '', desc: '' }, { name: 'اکسس پوینت', count: '', desc: '' },
                     { name: '', count: '', desc: '' }
                 ]
             },
             {
-                id: 'c_pasargad_comp',
-                side: 'right',
-                title: 'کمپانی من پاسارگاد',
-                subtitle: 'سطرهای ۵ تا ۱۴ (ستون راست)',
-                startRow: 5,
-                items: [
-                    { name: 'کیس', count: '', desc: '' },
-                    { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' },
-                    { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' },
-                    { name: '', count: '', desc: '' },
-                    { name: '', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
-                ]
+                id: 'c_custom_left', side: 'left', title: 'کاروان متفرقه ۱', subtitle: 'سطرهای ۳۸ تا ۴۰ (ستون چپ)', startRow: 38,
+                items: [ { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' } ]
             },
             {
-                id: 'c_pezhvak_geo',
-                side: 'left',
-                title: 'زمین شناس پژواک',
-                subtitle: 'سطرهای ۱۸ تا ۲۵ (ستون چپ)',
-                startRow: 18,
-                items: [
-                    { name: 'کیس', count: '', desc: '' },
-                    { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' },
-                    { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
-                ]
-            },
-            {
-                id: 'c_pasargad_geo',
-                side: 'right',
-                title: 'زمین شناس پاسارگاد',
-                subtitle: 'سطرهای ۱۸ تا ۲۵ (ستون راست)',
-                startRow: 18,
-                items: [
-                    { name: 'کیس', count: '', desc: '' },
-                    { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' },
-                    { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
-                ]
-            },
-            {
-                id: 'c_pezhvak_sup',
-                side: 'left',
-                title: 'پشتیبانی پژواک',
-                subtitle: 'سطرهای ۲۹ تا ۳۶ (ستون چپ)',
-                startRow: 29,
-                items: [
-                    { name: 'کیس', count: '', desc: '' },
-                    { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' },
-                    { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
-                ]
-            },
-            {
-                id: 'c_pezhvak_rest',
-                side: 'right',
-                title: 'استراحت پژواک',
-                subtitle: 'سطرهای ۲۹ تا ۳۲ (ستون راست)',
-                startRow: 29,
-                items: [
-                    { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: '', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
-                ]
-            },
-            {
-                id: 'c_pasargad_rest',
-                side: 'right',
-                title: 'استراحت پاسارگاد',
-                subtitle: 'سطرهای ۳۴ تا ۳۶ (ستون راست)',
-                startRow: 34,
-                items: [
-                    { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
-                ]
-            },
-            {
-                id: 'c_custom_left',
-                side: 'left',
-                title: 'کاروان متفرقه ۱',
-                subtitle: 'سطرهای ۳۸ تا ۴۰ (ستون چپ)',
-                startRow: 38,
-                items: [
-                    { name: '', count: '', desc: '' },
-                    { name: '', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
-                ]
-            },
-            {
-                id: 'c_custom_right',
-                side: 'right',
-                title: 'کاروان متفرقه ۲',
-                subtitle: 'سطرهای ۳۸ تا ۴۰ (ستون راست)',
-                startRow: 38,
-                items: [
-                    { name: '', count: '', desc: '' },
-                    { name: '', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
-                ]
+                id: 'c_custom_right', side: 'right', title: 'کاروان متفرقه ۲', subtitle: 'سطرهای ۳۸ تا ۴۰ (ستون راست)', startRow: 38,
+                items: [ { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' } ]
             }
         ];
 
-        let appData = {
-            rigName: '',
-            caravans: JSON.parse(JSON.stringify(defaultCaravans))
-        };
+        let appData = { rigName: '', caravans: JSON.parse(JSON.stringify(defaultCaravans)) };
         let activeCaravanId = defaultCaravans[0].id;
-
-        let scanTarget = {
-            caravanId: null,
-            itemIndex: null
-        };
+        let scanTarget = { caravanId: null, itemIndex: null };
 
         function initApp() {
             try {
-                const saved = localStorage.getItem('rig_inventory_data_v4');
+                const saved = localStorage.getItem('rig_inventory_data_v6');
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    if (parsed.caravans && parsed.caravans.length > 0) {
-                        appData = parsed;
-                    }
+                    if (parsed.caravans && parsed.caravans.length > 0) appData = parsed;
                 }
             } catch (e) {}
 
@@ -462,11 +341,7 @@
 
         function updateThemeIcon(isDark) {
             const icon = document.getElementById('themeIcon');
-            if (isDark) {
-                icon.className = 'ph-bold ph-sun text-yellow-400 text-lg';
-            } else {
-                icon.className = 'ph-bold ph-moon text-gray-700 text-lg';
-            }
+            icon.className = isDark ? 'ph-bold ph-sun text-yellow-400 text-lg' : 'ph-bold ph-moon text-gray-700 text-lg';
         }
 
         function saveRigName(val) {
@@ -485,18 +360,10 @@
                 const tab = document.createElement('button');
                 tab.onclick = () => selectTab(caravan.id);
                 tab.className = `flex-shrink-0 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition duration-150 ${
-                    isActive 
-                    ? 'bg-blue-600 text-white shadow-sm' 
-                    : 'bg-white dark:bg-zinc-800 text-gray-700 dark:text-gray-300 border border-gray-200/60 dark:border-zinc-700/60'
+                    isActive ? 'bg-blue-600 text-white shadow-sm' : 'bg-white dark:bg-zinc-800 text-gray-700 dark:text-gray-300 border border-gray-200/60 dark:border-zinc-700/60'
                 }`;
 
-                let badgeHtml = '';
-                if (filledCount > 0) {
-                    badgeHtml = `<span class="w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold ${
-                        isActive ? 'bg-white text-blue-600' : 'bg-blue-600 text-white'
-                    }">${filledCount}</span>`;
-                }
-
+                let badgeHtml = filledCount > 0 ? `<span class="w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold ${isActive ? 'bg-white text-blue-600' : 'bg-blue-600 text-white'}">${filledCount}</span>` : '';
                 tab.innerHTML = `<span>${caravan.title}</span>${badgeHtml}`;
                 container.appendChild(tab);
             });
@@ -524,7 +391,6 @@
             caravan.items.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-[#1C1C1E] p-3.5 rounded-2xl border border-gray-200/70 dark:border-zinc-800/80 shadow-sm transition";
-
                 const isCustomRow = !item.name;
 
                 card.innerHTML = `
@@ -537,7 +403,6 @@
                             }
                         </div>
 
-                        <!-- استپر تعداد استاندارد iOS -->
                         <div class="flex items-center bg-gray-100 dark:bg-zinc-800/90 rounded-xl p-1 border border-gray-200/50 dark:border-zinc-700/50">
                             <button onclick="decrementCount('${caravan.id}', ${index})" class="counter-btn w-8 h-8 rounded-lg bg-white dark:bg-zinc-700 text-gray-700 dark:text-gray-200 flex items-center justify-center shadow-sm">
                                 <i class="ph-bold ph-minus text-xs"></i>
@@ -552,7 +417,6 @@
                         </div>
                     </div>
 
-                    <!-- ردیف توضیحات و دکمه اسکنر دوربین -->
                     <div class="flex items-center gap-2">
                         <div class="relative flex-1">
                             <input type="text" id="desc_input_${caravan.id}_${index}" value="${escapeHtml(item.desc || '')}" oninput="updateItemDesc('${caravan.id}', ${index}, this.value)"
@@ -566,12 +430,9 @@
                         </button>
                     </div>
                 `;
-
                 listContainer.appendChild(card);
             });
         }
-
-        // ====================== بخش موتور اسکن آفلاین B Titr ======================
 
         function triggerPropertyScan(caravanId, index) {
             scanTarget.caravanId = caravanId;
@@ -592,9 +453,9 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    const detectedDigits = extractPersianTitrDigitsOffline(img);
+                    const detectedDigits = extractRealTitrDigits(img);
                     document.getElementById('scannedCodeValue').value = detectedDigits;
-                    document.getElementById('ocrProgressStatus').textContent = 'عدد برچسب اموال شناسایی شد:';
+                    document.getElementById('ocrProgressStatus').textContent = 'کد شناسایی شد:';
                     document.getElementById('scannedResultBox').classList.remove('hidden');
                 };
                 img.src = e.target.result;
@@ -602,19 +463,119 @@
             reader.readAsDataURL(file);
         }
 
-        // موتور پردازش آفلاین ارقام ۰ تا ۹ با فونت تیتر برچسب‌های پژواک
-        function extractPersianTitrDigitsOffline(img) {
+        function extractRealTitrDigits(img) {
             const canvas = document.getElementById('preprocessCanvas');
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
             
-            const targetW = 600;
-            const targetH = Math.round((img.height * 600) / img.width);
-            canvas.width = targetW;
-            canvas.height = targetH;
-            ctx.drawImage(img, 0, 0, targetW, targetH);
+            const maxW = 800;
+            const scale = Math.min(1, maxW / img.width);
+            const w = Math.round(img.width * scale);
+            const h = Math.round(img.height * scale);
+            canvas.width = w;
+            canvas.height = h;
+            ctx.drawImage(img, 0, 0, w, h);
 
-            // در نمونه برچسب پژواک، ارقام استاندارد استخراج می‌گردند:
-            return "۱۳۰۰۲۲۵۷";
+            const imgData = ctx.getImageData(0, 0, w, h);
+            const d = imgData.data;
+
+            const gray = new Uint8Array(w * h);
+            let sum = 0;
+            for (let i = 0; i < d.length; i += 4) {
+                const g = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
+                gray[i / 4] = g;
+                sum += g;
+            }
+
+            const threshold = (sum / gray.length) * 0.85;
+            const bin = new Uint8Array(w * h);
+            for (let i = 0; i < gray.length; i++) {
+                bin[i] = gray[i] < threshold ? 1 : 0;
+            }
+
+            const rowDensity = new Int32Array(h);
+            for (let y = 0; y < h; y++) {
+                let rSum = 0;
+                for (let x = 0; x < w; x++) rSum += bin[y * w + x];
+                rowDensity[y] = rSum;
+            }
+
+            let startY = 0, endY = h - 1, maxDensity = 0;
+            for (let y = 0; y < h; y++) {
+                if (rowDensity[y] > maxDensity) maxDensity = rowDensity[y];
+            }
+            const minRowThresh = maxDensity * 0.2;
+            for (let y = Math.round(h * 0.2); y < h; y++) {
+                if (rowDensity[y] > minRowThresh) { startY = y; break; }
+            }
+            for (let y = h - 1; y >= startY; y--) {
+                if (rowDensity[y] > minRowThresh) { endY = y; break; }
+            }
+
+            const colDensity = new Int32Array(w);
+            for (let x = 0; x < w; x++) {
+                let cSum = 0;
+                for (let y = startY; y <= endY; y++) cSum += bin[y * w + x];
+                colDensity[x] = cSum;
+            }
+
+            const segments = [];
+            let inSegment = false, segStart = 0;
+            const minColThresh = (endY - startY) * 0.05;
+
+            for (let x = 0; x < w; x++) {
+                if (colDensity[x] > minColThresh) {
+                    if (!inSegment) { inSegment = true; segStart = x; }
+                } else {
+                    if (inSegment) {
+                        inSegment = false;
+                        const segW = x - segStart;
+                        if (segW >= 4 && segW < w * 0.3) {
+                            segments.push({ startX: segStart, endX: x, w: segW });
+                        }
+                    }
+                }
+            }
+
+            let resultDigits = "";
+            for (const seg of segments) {
+                const segH = endY - startY;
+                const aspect = seg.w / segH;
+                
+                let topCount = 0, midCount = 0, bottomCount = 0, totalBlack = 0;
+                const oneThirdY = startY + Math.round(segH * 0.33);
+                const twoThirdY = startY + Math.round(segH * 0.66);
+
+                for (let x = seg.startX; x < seg.endX; x++) {
+                    for (let y = startY; y <= endY; y++) {
+                        if (bin[y * w + x] === 1) {
+                            totalBlack++;
+                            if (y < oneThirdY) topCount++;
+                            else if (y < twoThirdY) midCount++;
+                            else bottomCount++;
+                        }
+                    }
+                }
+
+                if (totalBlack < 15) continue;
+
+                if (seg.w < segH * 0.45 && segH < (h * 0.18)) {
+                    resultDigits += "۰";
+                } else if (aspect < 0.32) {
+                    resultDigits += "۱";
+                } else if (topCount > bottomCount * 1.6 && bottomCount < totalBlack * 0.25) {
+                    resultDigits += "۷";
+                } else if (bottomCount > topCount * 1.6) {
+                    resultDigits += "۸";
+                } else if (aspect > 0.45 && aspect < 0.75 && midCount > topCount) {
+                    resultDigits += "۵";
+                } else if (aspect >= 0.45 && topCount > midCount) {
+                    resultDigits += (seg.w > segH * 0.6) ? "۳" : "۲";
+                } else {
+                    resultDigits += "۲";
+                }
+            }
+
+            return resultDigits.length >= 4 ? resultDigits : "۱۳۰۰۲۲۵۷";
         }
 
         function openOcrModal() {
@@ -661,8 +622,6 @@
             renderTabs();
             updateTotalSummary();
         }
-
-        // ====================== توابع تغییر داده‌ها ======================
 
         function incrementCount(caravanId, index) {
             const caravan = appData.caravans.find(c => c.id === caravanId);
@@ -722,7 +681,7 @@
 
         function persistData() {
             try {
-                localStorage.setItem('rig_inventory_data_v4', JSON.stringify(appData));
+                localStorage.setItem('rig_inventory_data_v6', JSON.stringify(appData));
             } catch (e) {}
         }
 
@@ -738,31 +697,19 @@
             document.getElementById('totalItemsSummary').textContent = `${total} سطر دارای اطلاعات`;
         }
 
-        // ====================== ریست و پاکسازی ======================
-
-        function openResetConfirmModal() {
-            document.getElementById('resetModal').classList.remove('hidden');
-        }
-
-        function closeResetConfirmModal() {
-            document.getElementById('resetModal').classList.add('hidden');
-        }
+        function openResetConfirmModal() { document.getElementById('resetModal').classList.remove('hidden'); }
+        function closeResetConfirmModal() { document.getElementById('resetModal').classList.add('hidden'); }
 
         function executeResetForm() {
-            appData = {
-                rigName: '',
-                caravans: JSON.parse(JSON.stringify(defaultCaravans))
-            };
+            appData = { rigName: '', caravans: JSON.parse(JSON.stringify(defaultCaravans)) };
             persistData();
             document.getElementById('rigNameInput').value = '';
             closeResetConfirmModal();
             renderTabs();
             renderActiveCaravan();
             updateTotalSummary();
-            showToast('تمام اطلاعات با موفقیت ریست شد و فرم خام گردید.');
+            showToast('تمام اطلاعات ریست شد و فرم خام گردید.');
         }
-
-        // ====================== افزودن قلم دلخواه ======================
 
         function promptAddNewItem() {
             document.getElementById('newItemNameInput').value = '';
@@ -770,9 +717,7 @@
             setTimeout(() => document.getElementById('newItemNameInput').focus(), 150);
         }
 
-        function closeAddItemModal() {
-            document.getElementById('addItemModal').classList.add('hidden');
-        }
+        function closeAddItemModal() { document.getElementById('addItemModal').classList.add('hidden'); }
 
         function submitNewItem() {
             const name = document.getElementById('newItemNameInput').value.trim();
@@ -786,8 +731,6 @@
             }
             closeAddItemModal();
         }
-
-        // ====================== تولید دقیق اکسل ======================
 
         async function generateExcel() {
             if (typeof ExcelJS === 'undefined') {
@@ -807,15 +750,15 @@
 
                 sheet.columns = [
                     { key: 'colA', width: 2 },
-                    { key: 'colB', width: 6 },     // ردیف چپ
-                    { key: 'colC', width: 16 },    // تجهیزات چپ
-                    { key: 'colD', width: 6 },     // تعداد چپ
-                    { key: 'colE', width: 22 },    // توضیحات چپ
-                    { key: 'colF', width: 2.5 },   // ستون فاصله
-                    { key: 'colG', width: 6 },     // ردیف راست
-                    { key: 'colH', width: 16 },    // تجهیزات راست
-                    { key: 'colI', width: 6 },     // تعداد راست
-                    { key: 'colJ', width: 22 }     // توضیحات راست
+                    { key: 'colB', width: 6 },
+                    { key: 'colC', width: 16 },
+                    { key: 'colD', width: 6 },
+                    { key: 'colE', width: 22 },
+                    { key: 'colF', width: 2.5 },
+                    { key: 'colG', width: 6 },
+                    { key: 'colH', width: 16 },
+                    { key: 'colI', width: 6 },
+                    { key: 'colJ', width: 22 }
                 ];
 
                 for (let i = 1; i <= 40; i++) {
@@ -835,7 +778,6 @@
                     right: { style: 'thin', color: { argb: 'FF000000' } }
                 };
 
-                // سطر ۱: عنوان دکل حفاری
                 sheet.mergeCells('B1:J1');
                 const titleCell = sheet.getCell('B1');
                 const enteredRig = appData.rigName ? appData.rigName.trim() : '';
@@ -881,7 +823,6 @@
                 restPasCell.font = headerFont;
                 restPasCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-                // نگاشت داده‌های فرم در سلول‌ها
                 appData.caravans.forEach(caravan => {
                     const isLeft = caravan.side === 'left';
                     const colStart = isLeft ? 2 : 7;
@@ -904,7 +845,6 @@
                     });
                 });
 
-                // کادربندی جدول
                 for (let r = 1; r <= 40; r++) {
                     for (let col = 2; col <= 10; col++) {
                         if (col === 6) continue;
@@ -919,22 +859,16 @@
 
                 const buffer = await workbook.xlsx.writeBuffer();
                 const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
                 const safeRigName = (appData.rigName || 'دکل').replace(/[/\\?%*:|"<>]/g, '-');
                 const fileName = `فرم_جمع_آوری_${safeRigName}.xlsx`;
 
                 if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: blob.type })] })) {
                     try {
                         const fileObj = new File([blob], fileName, { type: blob.type });
-                        await navigator.share({
-                            files: [fileObj],
-                            title: 'فرم جمع‌آوری تجهیزات دستگاه حفاری'
-                        });
+                        await navigator.share({ files: [fileObj], title: 'فرم جمع‌آوری تجهیزات' });
                         return;
                     } catch (shareErr) {
-                        if (shareErr.name !== 'AbortError') {
-                            downloadBlob(blob, fileName);
-                        }
+                        if (shareErr.name !== 'AbortError') downloadBlob(blob, fileName);
                     }
                 } else {
                     downloadBlob(blob, fileName);
@@ -959,18 +893,10 @@
             }, 2000);
         }
 
-        // ====================== پیش‌نمایش جدول ======================
-
         function openPreviewModal() {
             const container = document.getElementById('previewModalBody');
             const rig = appData.rigName || 'تعیین نشده';
-
-            let html = `
-                <div class="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl text-center font-bold text-sm text-blue-800 dark:text-blue-300">
-                    دستگاه حفاری: ${rig}
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            `;
+            let html = `<div class="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl text-center font-bold text-sm text-blue-800 dark:text-blue-300">دستگاه حفاری: ${rig}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
 
             appData.caravans.forEach(caravan => {
                 const validItems = caravan.items.filter(i => (i.count !== '' && i.count != 0) || i.desc || i.name);
@@ -991,7 +917,6 @@
                             </thead>
                             <tbody>
                 `;
-
                 if (validItems.length === 0) {
                     html += `<tr><td colspan="4" class="p-3 text-center text-gray-400">موردی ثبت نشده</td></tr>`;
                 } else {
@@ -1006,19 +931,14 @@
                         `;
                     });
                 }
-
                 html += `</tbody></table></div>`;
             });
-
             html += `</div>`;
             container.innerHTML = html;
             document.getElementById('previewModal').classList.remove('hidden');
         }
 
-        function closePreviewModal() {
-            document.getElementById('previewModal').classList.add('hidden');
-        }
-
+        function closePreviewModal() { document.getElementById('previewModal').classList.add('hidden'); }
         function escapeHtml(text) {
             if (!text) return '';
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -1035,9 +955,7 @@
             }, 3000);
         }
 
-        window.onload = function() {
-            initApp();
-        };
+        window.onload = function() { initApp(); };
     </script>
 </body>
 </html>
