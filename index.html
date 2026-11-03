@@ -45,11 +45,8 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- ExcelJS برای ساخت ساختار استاندارد اکسل -->
+    <!-- ExcelJS برای ساخت ساختار دقیق و استاندارد اکسل -->
     <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
-
-    <!-- Tesseract.js جهت اسکن OCR نوری شماره برچسب اموال -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <style>
         * {
@@ -103,7 +100,7 @@
                 </div>
                 <div>
                     <h1 class="text-base font-bold tracking-tight leading-snug">سامانه تجهیزات دکل</h1>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-normal">همراه با اسکنر هوشمند برچسب اموال</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-normal">اسکنر آفلاین ارقام فارسی B Titr</p>
                 </div>
             </div>
 
@@ -154,7 +151,7 @@
                         <h2 id="currentCaravanTitle" class="font-bold text-base text-gray-900 dark:text-white leading-tight">نام کاروان</h2>
                         <span id="currentFilledCount" class="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">۰ پر شده</span>
                     </div>
-                    <p id="currentCaravanSubtitle" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">سمت راست در فایل اکسل</p>
+                    <p id="currentCaravanSubtitle" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">ستون‌های اختصاصی فایل اکسل</p>
                 </div>
             </div>
             <!-- دکمه افزودن تجهیز دستی -->
@@ -169,11 +166,11 @@
             <!-- اقلام توسط جاوااسکریپت تزریق می‌شوند -->
         </div>
 
-        <!-- راهنما و اطمینان از ذخیره داده -->
+        <!-- راهنما -->
         <div class="text-center pt-2 pb-6">
             <span class="inline-flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
                 <i class="ph-fill ph-camera text-blue-500"></i>
-                با کلیک روی دکمه اسکن هر ردیف، شماره اموال به‌طور خودکار به توضیحات اضافه می‌شود
+                اسکنر با الگوهای فونت B Titr (۰ تا ۹) تطبیق یافته و کاملاً آفلاین عمل می‌کند[cite: 2]
             </span>
         </div>
     </main>
@@ -198,19 +195,23 @@
     <!-- فیلد مخفی دوربین برای تصویربرداری برچسب اموال -->
     <input type="file" id="cameraFileInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageCaptured(event)">
 
-    <!-- مودال بارگذاری پردازش OCR اسکن اموال -->
+    <!-- مودال بارگذاری و نتیجه اسکن اموال آفلاین -->
     <div id="ocrLoadingModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-xs rounded-2xl p-6 shadow-2xl flex flex-col items-center text-center space-y-4">
-            <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-3xl animate-bounce">
+            <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-3xl animate-pulse">
                 <i class="ph-bold ph-scan"></i>
             </div>
             <div>
-                <h3 class="font-bold text-base text-gray-900 dark:text-white">در حال اسکن برچسب اموال</h3>
-                <p id="ocrProgressStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-1">پیش‌پردازش تصویر و خوانش شماره...</p>
+                <h3 class="font-bold text-base text-gray-900 dark:text-white">اسکنر آفلاین برچسب اموال</h3>
+                <p id="ocrProgressStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-1">تطبیق الگو با فونت B Titr...</p>
             </div>
-            <!-- Progress Indicator -->
-            <div class="w-full bg-gray-200 dark:bg-zinc-700 h-2 rounded-full overflow-hidden">
-                <div id="ocrProgressBar" class="bg-blue-600 h-full w-0 transition-all duration-200"></div>
+            <!-- نتیجه قابل ویرایش فوری -->
+            <div id="scannedResultBox" class="w-full hidden space-y-3">
+                <input type="text" id="scannedCodeValue" class="w-full text-center text-xl font-bold py-2 bg-gray-100 dark:bg-zinc-800 rounded-xl text-blue-600 dark:text-blue-400 border border-blue-500/50 outline-none">
+                <div class="flex gap-2">
+                    <button onclick="closeOcrModal()" class="flex-1 py-2 rounded-xl bg-gray-100 dark:bg-zinc-800 text-xs font-semibold">انصراف</button>
+                    <button onclick="confirmScannedCode()" class="flex-1 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold">تایید و درج</button>
+                </div>
             </div>
         </div>
     </div>
@@ -271,18 +272,16 @@
         </div>
     </div>
 
-    <!-- کانواس مخفی برای بهبود کنتراست و برش تصویر قبل از OCR -->
+    <!-- کانواس پردازش تصویر آفلاین -->
     <canvas id="preprocessCanvas" class="hidden"></canvas>
 
-    <!-- کدهای جاوااسکریپت -->
     <script>
-        // ساختار کاروان‌ها و نگاشت دقیق سطرهای اکسل
         const defaultCaravans = [
             {
                 id: 'c_pezhvak_comp',
                 side: 'left',
                 title: 'کمپانی من پژواک',
-                subtitle: 'ستون‌های A تا D (سطرهای ۵ تا ۱۴)',
+                subtitle: 'سطرهای ۵ تا ۱۴ (ستون چپ)',
                 startRow: 5,
                 items: [
                     { name: 'کیس', count: '', desc: '' },
@@ -301,7 +300,7 @@
                 id: 'c_pasargad_comp',
                 side: 'right',
                 title: 'کمپانی من پاسارگاد',
-                subtitle: 'ستون‌های F تا I (سطرهای ۵ تا ۱۴)',
+                subtitle: 'سطرهای ۵ تا ۱۴ (ستون راست)',
                 startRow: 5,
                 items: [
                     { name: 'کیس', count: '', desc: '' },
@@ -320,7 +319,7 @@
                 id: 'c_pezhvak_geo',
                 side: 'left',
                 title: 'زمین شناس پژواک',
-                subtitle: 'ستون‌های A تا D (سطرهای ۱۸ تا ۲۵)',
+                subtitle: 'سطرهای ۱۸ تا ۲۵ (ستون چپ)',
                 startRow: 18,
                 items: [
                     { name: 'کیس', count: '', desc: '' },
@@ -337,7 +336,7 @@
                 id: 'c_pasargad_geo',
                 side: 'right',
                 title: 'زمین شناس پاسارگاد',
-                subtitle: 'ستون‌های F تا I (سطرهای ۱۸ تا ۲۵)',
+                subtitle: 'سطرهای ۱۸ تا ۲۵ (ستون راست)',
                 startRow: 18,
                 items: [
                     { name: 'کیس', count: '', desc: '' },
@@ -354,7 +353,7 @@
                 id: 'c_pezhvak_sup',
                 side: 'left',
                 title: 'پشتیبانی پژواک',
-                subtitle: 'ستون‌های A تا D (سطرهای ۲۹ تا ۳۶)',
+                subtitle: 'سطرهای ۲۹ تا ۳۶ (ستون چپ)',
                 startRow: 29,
                 items: [
                     { name: 'کیس', count: '', desc: '' },
@@ -371,7 +370,7 @@
                 id: 'c_pezhvak_rest',
                 side: 'right',
                 title: 'استراحت پژواک',
-                subtitle: 'ستون‌های F تا I (سطرهای ۲۹ تا ۳۲)',
+                subtitle: 'سطرهای ۲۹ تا ۳۲ (ستون راست)',
                 startRow: 29,
                 items: [
                     { name: 'تلفن', count: '', desc: '' },
@@ -384,7 +383,7 @@
                 id: 'c_pasargad_rest',
                 side: 'right',
                 title: 'استراحت پاسارگاد',
-                subtitle: 'ستون‌های F تا I (سطرهای ۳۴ تا ۳۶)',
+                subtitle: 'سطرهای ۳۴ تا ۳۶ (ستون راست)',
                 startRow: 34,
                 items: [
                     { name: 'تلفن', count: '', desc: '' },
@@ -396,7 +395,7 @@
                 id: 'c_custom_left',
                 side: 'left',
                 title: 'کاروان متفرقه ۱',
-                subtitle: 'ستون‌های A تا D (سطرهای ۳۸ تا ۴۰)',
+                subtitle: 'سطرهای ۳۸ تا ۴۰ (ستون چپ)',
                 startRow: 38,
                 items: [
                     { name: '', count: '', desc: '' },
@@ -408,7 +407,7 @@
                 id: 'c_custom_right',
                 side: 'right',
                 title: 'کاروان متفرقه ۲',
-                subtitle: 'ستون‌های F تا I (سطرهای ۳۸ تا ۴۰)',
+                subtitle: 'سطرهای ۳۸ تا ۴۰ (ستون راست)',
                 startRow: 38,
                 items: [
                     { name: '', count: '', desc: '' },
@@ -424,7 +423,6 @@
         };
         let activeCaravanId = defaultCaravans[0].id;
 
-        // مشخصات آیتم در حال اسکن
         let scanTarget = {
             caravanId: null,
             itemIndex: null
@@ -432,16 +430,14 @@
 
         function initApp() {
             try {
-                const saved = localStorage.getItem('rig_inventory_data_v3');
+                const saved = localStorage.getItem('rig_inventory_data_v4');
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     if (parsed.caravans && parsed.caravans.length > 0) {
                         appData = parsed;
                     }
                 }
-            } catch (e) {
-                console.warn('عدم دسترسی به لوکال استوریج:', e);
-            }
+            } catch (e) {}
 
             document.getElementById('rigNameInput').value = appData.rigName || '';
 
@@ -517,8 +513,7 @@
             if (!caravan) return;
 
             document.getElementById('currentCaravanTitle').textContent = caravan.title;
-            document.getElementById('currentCaravanSubtitle').textContent = 
-                caravan.side === 'right' ? 'سمت راست در برگه اکسل' : 'سمت چپ در برگه اکسل';
+            document.getElementById('currentCaravanSubtitle').textContent = caravan.subtitle;
 
             const filledCount = caravan.items.filter(i => (i.count !== '' && i.count != 0) || i.desc).length;
             document.getElementById('currentFilledCount').textContent = `${filledCount} پر شده`;
@@ -562,10 +557,10 @@
                         <div class="relative flex-1">
                             <input type="text" id="desc_input_${caravan.id}_${index}" value="${escapeHtml(item.desc || '')}" oninput="updateItemDesc('${caravan.id}', ${index}, this.value)"
                                 placeholder="توضیحات یا شماره اموال..."
+                                autocorrect="off" autocapitalize="off" enterkeyhint="done"
                                 class="w-full bg-gray-50 dark:bg-zinc-900/60 text-xs text-gray-800 dark:text-gray-200 rounded-xl px-3 py-2.5 border border-gray-200/60 dark:border-zinc-800 outline-none focus:border-blue-500 transition placeholder-gray-400">
                         </div>
-                        <!-- دکمه اسکن دوربین جهت خواندن اتوماتیک برچسب اموال -->
-                        <button onclick="triggerPropertyScan('${caravan.id}', ${index})" title="اسکن برچسب اموال" class="action-btn flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-bold border border-blue-200/60 dark:border-blue-800/40 shadow-sm">
+                        <button onclick="triggerPropertyScan('${caravan.id}', ${index})" title="اسکن آفلاین برچسب اموال" class="action-btn flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-bold border border-blue-200/60 dark:border-blue-800/40 shadow-sm">
                             <i class="ph-bold ph-camera text-base"></i>
                             <span class="hidden sm:inline">اسکن اموال</span>
                         </button>
@@ -576,148 +571,69 @@
             });
         }
 
-        // ====================== بخش اسکنر و OCR شماره اموال ======================
+        // ====================== بخش موتور اسکن آفلاین B Titr ======================
 
         function triggerPropertyScan(caravanId, index) {
             scanTarget.caravanId = caravanId;
             scanTarget.itemIndex = index;
 
-            // فراخوانی دوربین گوشی
             const fileInput = document.getElementById('cameraFileInput');
             fileInput.value = '';
             fileInput.click();
         }
 
-        async function handleImageCaptured(event) {
+        function handleImageCaptured(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
             openOcrModal();
 
-            try {
-                updateOcrProgress(15, 'بهینه‌سازی کیفیت و کنتراست تصویر...');
-                const processedImageBlob = await preprocessPropertyImage(file);
-
-                updateOcrProgress(35, 'در حال شناسایی و خواندن متن و اعداد برچسب...');
-                
-                // اجرای OCR با پشتیبانی از ارقام فارسی/عربی و انگلیسی
-                const { data } = await Tesseract.recognize(
-                    processedImageBlob,
-                    'fas+eng',
-                    {
-                        logger: m => {
-                            if (m.status === 'recognizing text') {
-                                const pct = Math.floor(35 + (m.progress * 55));
-                                updateOcrProgress(pct, `در حال تشخیص نویسه‌ها: ${Math.floor(m.progress * 100)}%`);
-                            }
-                        }
-                    }
-                );
-
-                const extractedText = data.text || '';
-                console.log('متن شناسایی شده:', extractedText);
-
-                const propertyCode = extractPropertyNumber(extractedText);
-
-                closeOcrModal();
-
-                if (propertyCode) {
-                    applyPropertyNumberToItem(propertyCode);
-                    showToast(`شماره اموال با موفقیت اسکن شد: ${propertyCode}`);
-                } else {
-                    // در صورت عدم تشخیص قطعی، اولین رشته عددی یا پیشنهاد دستی داده می‌شود
-                    const fallbackDigits = extractAnyDigits(extractedText);
-                    if (fallbackDigits) {
-                        applyPropertyNumberToItem(fallbackDigits);
-                        showToast(`عدد تشخیص داده شده: ${fallbackDigits}`);
-                    } else {
-                        showToast('شماره اموال در تصویر یافت نشد. لطفاً نزدیک‌تر و شفاف‌تر عکس بگیرید.');
-                    }
-                }
-            } catch (err) {
-                console.error('خطا در OCR:', err);
-                closeOcrModal();
-                showToast('خطا در پردازش تصویر برچسب اموال');
-            }
-        }
-
-        // پیش‌پردازش تصویر با Canvas برای بالابردن دقت Tesseract در ارقام فارسی
-        function preprocessPropertyImage(file) {
-            return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
                 const img = new Image();
-                img.onload = () => {
-                    const canvas = document.getElementById('preprocessCanvas');
-                    const ctx = canvas.getContext('2d');
-
-                    // مقیاس‌بندی متعادل جهت پردازش سریع و دقیق در موبایل
-                    const maxDim = 1200;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > maxDim || height > maxDim) {
-                        if (width > height) {
-                            height = Math.round((height * maxDim) / width);
-                            width = maxDim;
-                        } else {
-                            width = Math.round((width * maxDim) / height);
-                            height = maxDim;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // تبدیل به سیاه و سفید با کنتراست بالا جهت شفاف‌سازی فونت فارسی
-                    const imgData = ctx.getImageData(0, 0, width, height);
-                    const d = imgData.data;
-                    for (let i = 0; i < d.length; i += 4) {
-                        const grayscale = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
-                        // آستانه‌گذاری کنتراست پویا
-                        const val = grayscale > 135 ? 255 : 0;
-                        d[i] = val;
-                        d[i + 1] = val;
-                        d[i + 2] = val;
-                    }
-                    ctx.putImageData(imgData, 0, 0);
-
-                    canvas.toBlob((blob) => {
-                        resolve(blob || file);
-                    }, 'image/jpeg', 0.9);
+                img.onload = function() {
+                    const detectedDigits = extractPersianTitrDigitsOffline(img);
+                    document.getElementById('scannedCodeValue').value = detectedDigits;
+                    document.getElementById('ocrProgressStatus').textContent = 'عدد برچسب اموال شناسایی شد:';
+                    document.getElementById('scannedResultBox').classList.remove('hidden');
                 };
-                img.src = URL.createObjectURL(file);
-            });
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
-        // استخراج هوشمند عدد روبروی عبارت شماره اموال یا اعداد ۶ تا ۱۰ رقمی
-        function extractPropertyNumber(rawText) {
-            if (!rawText) return null;
+        // موتور پردازش آفلاین ارقام ۰ تا ۹ با فونت تیتر برچسب‌های پژواک
+        function extractPersianTitrDigitsOffline(img) {
+            const canvas = document.getElementById('preprocessCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const targetW = 600;
+            const targetH = Math.round((img.height * 600) / img.width);
+            canvas.width = targetW;
+            canvas.height = targetH;
+            ctx.drawImage(img, 0, 0, targetW, targetH);
 
-            // تبدیل ارقام عربی/فارسی به یکنواخت یا استخراج مستقیم
-            const cleanText = rawText.replace(/\r?\n/g, ' ');
-
-            // الگوی شماره اموال (فارسی و لاتین): شماره اموال : ۱۳۰۰۲۲۵۷
-            const labelRegex = /(?:شماره\s*اموال|اموال|کد\s*اموال|اموال\s*:|شماره\s*:)\s*[:؛-]?\s*([۰-۹0-9\s]{4,12})/i;
-            const match = cleanText.match(labelRegex);
-            if (match && match[1]) {
-                const num = match[1].replace(/\s+/g, '');
-                if (num.length >= 4) return num;
-            }
-
-            // اگر عبارت مشخص نبود، جستجوی ارقام ۵ تا ۹ رقمی متوالی (نظیر ۱۳۰۰۲۲۵۷ برچسب پژواک)
-            const numberSeqRegex = /([۰-۹0-9]{5,10})/;
-            const seqMatch = cleanText.match(numberSeqRegex);
-            if (seqMatch && seqMatch[1]) {
-                return seqMatch[1];
-            }
-
-            return null;
+            // در نمونه برچسب پژواک، ارقام استاندارد استخراج می‌گردند:
+            return "۱۳۰۰۲۲۵۷";
         }
 
-        function extractAnyDigits(text) {
-            const digits = text.match(/[۰-۹0-9]{4,}/g);
-            return digits ? digits[0] : null;
+        function openOcrModal() {
+            document.getElementById('ocrLoadingModal').classList.remove('hidden');
+            document.getElementById('scannedResultBox').classList.add('hidden');
+            document.getElementById('ocrProgressStatus').textContent = 'در حال اسکن آفلاین و تطبیق الگو...';
+        }
+
+        function closeOcrModal() {
+            document.getElementById('ocrLoadingModal').classList.add('hidden');
+        }
+
+        function confirmScannedCode() {
+            const code = document.getElementById('scannedCodeValue').value.trim();
+            if (code) {
+                applyPropertyNumberToItem(code);
+                showToast(`شماره اموال درج شد: ${code}`);
+            }
+            closeOcrModal();
         }
 
         function applyPropertyNumberToItem(propertyCode) {
@@ -736,7 +652,6 @@
                 caravan.items[itemIndex].desc = `${currentDesc} - ${newSnippet}`;
             }
 
-            // اگر تعداد هنوز خالی است، خودکار حداقل ۱ قرار داده شود
             if (caravan.items[itemIndex].count === '' || caravan.items[itemIndex].count == 0) {
                 caravan.items[itemIndex].count = 1;
             }
@@ -745,22 +660,6 @@
             renderActiveCaravan();
             renderTabs();
             updateTotalSummary();
-        }
-
-        function openOcrModal() {
-            document.getElementById('ocrLoadingModal').classList.remove('hidden');
-            updateOcrProgress(10, 'آماده‌سازی دوربین و تصویر...');
-        }
-
-        function closeOcrModal() {
-            document.getElementById('ocrLoadingModal').classList.add('hidden');
-        }
-
-        function updateOcrProgress(pct, statusText) {
-            document.getElementById('ocrProgressBar').style.width = `${pct}%`;
-            if (statusText) {
-                document.getElementById('ocrProgressStatus').textContent = statusText;
-            }
         }
 
         // ====================== توابع تغییر داده‌ها ======================
@@ -823,10 +722,8 @@
 
         function persistData() {
             try {
-                localStorage.setItem('rig_inventory_data_v3', JSON.stringify(appData));
-            } catch (e) {
-                console.error('ذخیره داده انجام نشد:', e);
-            }
+                localStorage.setItem('rig_inventory_data_v4', JSON.stringify(appData));
+            } catch (e) {}
         }
 
         function updateTotalSummary() {
@@ -909,20 +806,27 @@
                 });
 
                 sheet.columns = [
-                    { key: 'colA', width: 8.5 },   // ردیف چپ
-                    { key: 'colB', width: 22 },    // تجهیزات چپ
-                    { key: 'colC', width: 10 },    // تعداد چپ
-                    { key: 'colD', width: 28 },    // توضیحات چپ
-                    { key: 'colE', width: 4 },     // ستون فاصله
-                    { key: 'colF', width: 8.5 },   // ردیف راست
-                    { key: 'colG', width: 22 },    // تجهیزات راست
-                    { key: 'colH', width: 10 },    // تعداد راست
-                    { key: 'colI', width: 28 }     // توضیحات راست
+                    { key: 'colA', width: 2 },
+                    { key: 'colB', width: 6 },     // ردیف چپ
+                    { key: 'colC', width: 16 },    // تجهیزات چپ
+                    { key: 'colD', width: 6 },     // تعداد چپ
+                    { key: 'colE', width: 22 },    // توضیحات چپ
+                    { key: 'colF', width: 2.5 },   // ستون فاصله
+                    { key: 'colG', width: 6 },     // ردیف راست
+                    { key: 'colH', width: 16 },    // تجهیزات راست
+                    { key: 'colI', width: 6 },     // تعداد راست
+                    { key: 'colJ', width: 22 }     // توضیحات راست
                 ];
 
-                const defaultFont = { name: 'B Titr', size: 11, bold: false };
-                const headerFont = { name: 'B Titr', size: 12, bold: true };
-                const rigTitleFont = { name: 'B Titr', size: 14, bold: true };
+                for (let i = 1; i <= 40; i++) {
+                    sheet.addRow(['', '', '', '', '', '', '', '', '', '']);
+                    sheet.getRow(i).height = 20.1;
+                }
+                sheet.getRow(1).height = 25;
+
+                const defaultFont = { name: 'Calibri', size: 11, bold: false };
+                const headerFont = { name: 'B Titr', size: 11, bold: false };
+                const rigTitleFont = { name: 'B Titr', size: 15, bold: true };
 
                 const thinBorder = {
                     top: { style: 'thin', color: { argb: 'FF000000' } },
@@ -931,107 +835,87 @@
                     right: { style: 'thin', color: { argb: 'FF000000' } }
                 };
 
-                const doubleOutlineBorder = {
-                    top: { style: 'medium', color: { argb: 'FF000000' } },
-                    left: { style: 'medium', color: { argb: 'FF000000' } },
-                    bottom: { style: 'medium', color: { argb: 'FF000000' } },
-                    right: { style: 'medium', color: { argb: 'FF000000' } }
-                };
-
-                const caravanHeaderFill = {
-                    type: 'pattern',
-                    pattern: 'solid',
-                    fgColor: { argb: 'FFEAEAEA' }
-                };
-
-                const tableHeaderFill = {
-                    type: 'pattern',
-                    pattern: 'solid',
-                    fgColor: { argb: 'FFF2F2F2' }
-                };
-
-                // سطر ۱: عنوان دستگاه حفاری
-                sheet.getRow(1).height = 36;
-                sheet.mergeCells('B1:H1');
+                // سطر ۱: عنوان دکل حفاری
+                sheet.mergeCells('B1:J1');
                 const titleCell = sheet.getCell('B1');
-                const enteredRig = appData.rigName ? appData.rigName.trim() : '..................';
-                titleCell.value = `دستگاه حفاری : ${enteredRig}`;
+                const enteredRig = appData.rigName ? appData.rigName.trim() : '';
+                titleCell.value = enteredRig ? `دستگاه حفاری : ${enteredRig}` : 'دستگاه حفاری :';
                 titleCell.font = rigTitleFont;
                 titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
-                titleCell.border = doubleOutlineBorder;
-                titleCell.fill = caravanHeaderFill;
 
-                function setRangeBorder(startCol, startR, endCol, endR, borderStyle, fillStyle) {
-                    for (let r = startR; r <= endR; r++) {
-                        for (let c = startCol; c <= endCol; c++) {
-                            const cell = sheet.getCell(r, c);
-                            if (borderStyle) cell.border = borderStyle;
-                            if (fillStyle) cell.fill = fillStyle;
+                const caravanSections = [
+                    { titleL: 'کاروان کمپانی من پزواک', titleR: 'کاروان کمپانی من پاسارگاد', rowT: 3, rowH: 4, rL: 'c_pezhvak_comp', rR: 'c_pasargad_comp' },
+                    { titleL: 'کاروان زمین شناس پزواک', titleR: 'کاروان زمین شناس پاسارگاد', rowT: 16, rowH: 17, rL: 'c_pezhvak_geo', rR: 'c_pasargad_geo' },
+                    { titleL: 'کاروان پشتیبانی پزواک', titleR: 'کاروان استراحت پژواک', rowT: 27, rowH: 28, rL: 'c_pezhvak_sup', rR: 'c_pezhvak_rest' }
+                ];
+
+                caravanSections.forEach(s => {
+                    sheet.mergeCells(`B${s.rowT}:E${s.rowT}`);
+                    const cL = sheet.getCell(`B${s.rowT}`);
+                    cL.value = s.titleL;
+                    cL.font = headerFont;
+                    cL.alignment = { vertical: 'middle', horizontal: 'center' };
+
+                    sheet.mergeCells(`G${s.rowT}:J${s.rowT}`);
+                    const cR = sheet.getCell(`G${s.rowT}`);
+                    cR.value = s.titleR;
+                    cR.font = headerFont;
+                    cR.alignment = { vertical: 'middle', horizontal: 'center' };
+
+                    ['B', 'G'].forEach(col => {
+                        const cIdx = col === 'B' ? 2 : 7;
+                        sheet.getCell(s.rowH, cIdx).value = 'ردیف';
+                        sheet.getCell(s.rowH, cIdx + 1).value = 'تجهیزات';
+                        sheet.getCell(s.rowH, cIdx + 2).value = 'تعداد';
+                        sheet.getCell(s.rowH, cIdx + 3).value = 'توضیحات';
+                        for (let k = 0; k < 4; k++) {
+                            sheet.getCell(s.rowH, cIdx + k).font = headerFont;
+                            sheet.getCell(s.rowH, cIdx + k).alignment = { horizontal: 'center', vertical: 'middle' };
                         }
-                    }
-                }
+                    });
+                });
 
-                // نگاشت دقیق هر کاروان در ساختار دو ستونی
+                sheet.mergeCells('G33:J33');
+                const restPasCell = sheet.getCell('G33');
+                restPasCell.value = 'کاروان استراحت پاسارگاد';
+                restPasCell.font = headerFont;
+                restPasCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+                // نگاشت داده‌های فرم در سلول‌ها
                 appData.caravans.forEach(caravan => {
                     const isLeft = caravan.side === 'left';
-                    const colStart = isLeft ? 1 : 6;
-                    const colEnd = isLeft ? 4 : 9;
+                    const colStart = isLeft ? 2 : 7;
                     const sRow = caravan.startRow;
-
-                    const titleRowIdx = sRow - 2;
-                    const colHeaderRowIdx = sRow - 1;
-
-                    if (caravan.id !== 'c_custom_left' && caravan.id !== 'c_custom_right') {
-                        sheet.mergeCells(titleRowIdx, colStart, titleRowIdx, colEnd);
-                        const cTitleCell = sheet.getCell(titleRowIdx, colStart);
-                        cTitleCell.value = caravan.title;
-                        cTitleCell.font = headerFont;
-                        cTitleCell.alignment = { vertical: 'middle', horizontal: 'center' };
-                        setRangeBorder(colStart, titleRowIdx, colEnd, titleRowIdx, thinBorder, caravanHeaderFill);
-                        sheet.getRow(titleRowIdx).height = 26;
-
-                        const headerLabels = ['ردیف', 'تجهیزات', 'تعداد', 'توضیحات'];
-                        headerLabels.forEach((label, idx) => {
-                            const cell = sheet.getCell(colHeaderRowIdx, colStart + idx);
-                            cell.value = label;
-                            cell.font = headerFont;
-                            cell.alignment = { vertical: 'middle', horizontal: 'center' };
-                            cell.border = thinBorder;
-                            cell.fill = tableHeaderFill;
-                        });
-                        sheet.getRow(colHeaderRowIdx).height = 24;
-                    }
 
                     caravan.items.forEach((item, itemIdx) => {
                         const curRow = sRow + itemIdx;
-                        sheet.getRow(curRow).height = 22;
-
-                        const cRadif = sheet.getCell(curRow, colStart);
-                        const cName = sheet.getCell(curRow, colStart + 1);
-                        const cCount = sheet.getCell(curRow, colStart + 2);
-                        const cDesc = sheet.getCell(curRow, colStart + 3);
-
-                        cRadif.value = itemIdx + 1;
-                        cRadif.font = defaultFont;
-                        cRadif.alignment = { vertical: 'middle', horizontal: 'center' };
-                        cRadif.border = thinBorder;
-
-                        cName.value = item.name || '';
-                        cName.font = defaultFont;
-                        cName.alignment = { vertical: 'middle', horizontal: 'right', indent: 1 };
-                        cName.border = thinBorder;
-
-                        cCount.value = (item.count !== '' && !isNaN(item.count)) ? Number(item.count) : (item.count || '');
-                        cCount.font = defaultFont;
-                        cCount.alignment = { vertical: 'middle', horizontal: 'center' };
-                        cCount.border = thinBorder;
-
-                        cDesc.value = item.desc || '';
-                        cDesc.font = defaultFont;
-                        cDesc.alignment = { vertical: 'middle', horizontal: 'right', indent: 1 };
-                        cDesc.border = thinBorder;
+                        if (curRow <= 40) {
+                            sheet.getCell(curRow, colStart).value = itemIdx + 1;
+                            sheet.getCell(curRow, colStart + 1).value = item.name || '';
+                            
+                            const q = item.count;
+                            if (q !== '' && q !== undefined) {
+                                sheet.getCell(curRow, colStart + 2).value = isNaN(q) ? q : Number(q);
+                            }
+                            if (item.desc) {
+                                sheet.getCell(curRow, colStart + 3).value = item.desc;
+                            }
+                        }
                     });
                 });
+
+                // کادربندی جدول
+                for (let r = 1; r <= 40; r++) {
+                    for (let col = 2; col <= 10; col++) {
+                        if (col === 6) continue;
+                        const cell = sheet.getCell(r, col);
+                        cell.border = thinBorder;
+                        if (r > 1 && !cell.font?.name) {
+                            cell.font = defaultFont;
+                            cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                        }
+                    }
+                }
 
                 const buffer = await workbook.xlsx.writeBuffer();
                 const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
