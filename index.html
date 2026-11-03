@@ -39,7 +39,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- کتابخانه اکسل برای ساختار استاندارد فایل جدید -->
     <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <!-- کتابخانه سبک تولید کیوآرکد آفلاین -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
     <style>
         * {
@@ -64,11 +67,38 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .ios-blur { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .counter-btn:active, .action-btn:active { transform: scale(0.92); }
+        .action-btn:active { transform: scale(0.94); }
+
+        /* استایل اختصاصی چاپ در قطع استاندارد A5 */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableA5Area, #printableA5Area * {
+                visibility: visible;
+            }
+            #printableA5Area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 148mm;
+                min-height: 210mm;
+                padding: 10mm;
+                margin: 0;
+                background: #ffffff !important;
+                color: #000000 !important;
+                display: block !important;
+            }
+            @page {
+                size: A5 portrait;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 <body class="bg-[#F2F2F7] dark:bg-black text-[#1C1C1E] dark:text-[#F2F2F7] antialiased transition-colors duration-200 min-h-screen">
 
+    <!-- هدر برنامه -->
     <header class="sticky top-0 z-30 ios-blur bg-white/85 dark:bg-[#1C1C1E]/85 border-b border-[#E5E5EA] dark:border-[#2C2C2E]">
         <div class="px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
@@ -77,7 +107,7 @@
                 </div>
                 <div>
                     <h1 class="text-base font-bold tracking-tight leading-snug">سامانه تجهیزات دکل</h1>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-normal">سامانه جمع آوری دکل</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-normal">فرم ثبت، شناسنامه A5 و خروجی اکسل</p>
                 </div>
             </div>
 
@@ -107,6 +137,7 @@
         </div>
     </header>
 
+    <!-- محتوای اصلی کاروان فعال -->
     <main class="max-w-xl mx-auto px-4 py-3 space-y-3">
         <div class="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3.5 rounded-2xl border border-gray-200/70 dark:border-zinc-800 shadow-sm">
             <div class="flex items-center gap-3">
@@ -121,22 +152,24 @@
                     <p id="currentCaravanSubtitle" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">ستون‌های اختصاصی فایل اکسل</p>
                 </div>
             </div>
-            <button onclick="promptAddNewItem()" class="action-btn flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-xl transition">
-                <i class="ph-bold ph-plus"></i>
-                <span>افزودن قلم</span>
-            </button>
+            
+            <div class="flex items-center gap-1.5">
+                <!-- دکمه شناسنامه اتاق با QR Code -->
+                <button onclick="openRoomPassportModal()" class="action-btn flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-xl transition">
+                    <i class="ph-bold ph-qr-code text-sm"></i>
+                    <span>شناسنامه A5</span>
+                </button>
+                <button onclick="promptAddNewItem()" class="action-btn flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-xl transition">
+                    <i class="ph-bold ph-plus text-sm"></i>
+                    <span>افزودن قلم</span>
+                </button>
+            </div>
         </div>
 
         <div id="equipmentList" class="space-y-3"></div>
-
-        <div class="text-center pt-2 pb-6">
-            <span class="inline-flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
-                <i class="ph-fill ph-camera text-blue-500"></i>
-                برای اسکن، کادر دوربین را مستقیماً روی ارقام شماره اموال نگه دارید
-            </span>
-        </div>
     </main>
 
+    <!-- نوار ثابت پایین -->
     <div class="fixed bottom-0 inset-x-0 z-30 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] ios-blur bg-white/90 dark:bg-[#1C1C1E]/90 border-t border-gray-200/80 dark:border-zinc-800">
         <div class="max-w-xl mx-auto flex items-center gap-3">
             <div class="flex-1 flex flex-col pl-2">
@@ -151,30 +184,79 @@
         </div>
     </div>
 
-    <input type="file" id="cameraFileInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageCaptured(event)">
-
-    <!-- مودال نتیجه اسکن واقعی -->
-    <div id="ocrLoadingModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-xs rounded-2xl p-6 shadow-2xl flex flex-col items-center text-center space-y-4">
-            <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-3xl">
-                <i class="ph-bold ph-scan"></i>
-            </div>
-            <div>
-                <h3 class="font-bold text-base text-gray-900 dark:text-white">اسکن آفلاین برچسب اموال</h3>
-                <p id="ocrProgressStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-1">در حال تحلیل ساختار ارقام B Titr...</p>
-            </div>
-            <div id="scannedResultBox" class="w-full hidden space-y-3">
-                <input type="text" id="scannedCodeValue" class="w-full text-center text-xl font-bold py-2 bg-gray-100 dark:bg-zinc-800 rounded-xl text-blue-600 dark:text-blue-400 border border-blue-500/50 outline-none">
-                <p class="text-[11px] text-gray-400">در صورت نیاز می‌توانید عدد را قبل از درج ویرایش کنید</p>
-                <div class="flex gap-2">
-                    <button onclick="closeOcrModal()" class="flex-1 py-2 rounded-xl bg-gray-100 dark:bg-zinc-800 text-xs font-semibold">انصراف</button>
-                    <button onclick="confirmScannedCode()" class="flex-1 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold">تایید و درج</button>
+    <!-- مودال شناسنامه اتاق A5 با QR Code -->
+    <div id="passportModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-lg max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-200 dark:border-zinc-800 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-certificate text-xl text-indigo-500"></i>
+                    <h3 class="font-bold text-base text-gray-900 dark:text-white">شناسنامه تجهیزات اتاق (قطع A5)</h3>
                 </div>
+                <button onclick="closePassportModal()" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-500">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <div class="p-4 overflow-y-auto space-y-4">
+                <!-- محدوده رندر شیت A5 برای پیش‌نمایش و چاپ -->
+                <div id="passportA5Container" class="bg-white text-black p-5 rounded-2xl border-2 border-gray-300 shadow-sm space-y-4">
+                    <!-- سربرگ رسمی شناسنامه -->
+                    <div class="flex items-center justify-between border-b-2 border-gray-800 pb-3">
+                        <div>
+                            <h2 class="text-base font-extrabold text-gray-900">شناسنامه و ماتریس تجهیزات اتاق</h2>
+                            <p id="passportRigTitle" class="text-xs text-gray-700 font-bold mt-1">دستگاه حفاری: نامشخص</p>
+                        </div>
+                        <div class="text-left">
+                            <span id="passportCaravanTag" class="inline-block bg-gray-100 text-gray-900 text-xs px-2.5 py-1 rounded font-bold border border-gray-400">کاروان</span>
+                        </div>
+                    </div>
+
+                    <!-- بخش محتوا: جدول تجهیزات و QR Code -->
+                    <div class="flex flex-col sm:flex-row gap-4 items-start">
+                        <!-- جدول اقلام -->
+                        <div class="flex-1 w-full">
+                            <table class="w-full text-right text-xs border-collapse border border-gray-400">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="border border-gray-400 p-1.5 text-center w-8">#</th>
+                                        <th class="border border-gray-400 p-1.5">تجهیز</th>
+                                        <th class="border border-gray-400 p-1.5">مدل</th>
+                                        <th class="border border-gray-400 p-1.5">توضیحات / کد اموال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="passportTableBody"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- جعبه اختصاصی QR Code با حاشیه و توضیحات -->
+                        <div class="w-full sm:w-36 flex flex-col items-center justify-center p-2.5 border border-gray-300 rounded-xl bg-gray-50 text-center flex-shrink-0">
+                            <div id="passportQrCode" class="w-28 h-28 flex items-center justify-center bg-white p-1 rounded border border-gray-200 shadow-inner"></div>
+                            <span class="text-[10px] text-gray-600 font-bold mt-2">اسکن جهت تایید محتویات</span>
+                        </div>
+                    </div>
+
+                    <!-- پاورقی و کادر امضا -->
+                    <div class="border-t border-gray-300 pt-3 flex justify-between items-center text-[11px] text-gray-600">
+                        <span>تاریخ صدور: <span id="passportPrintDate"></span></span>
+                        <span>امضا و تایید مسئول فناوری اطلاعات: ................</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-200 dark:border-zinc-800 flex justify-end gap-2 bg-gray-50 dark:bg-zinc-900">
+                <button onclick="closePassportModal()" class="px-4 py-2 rounded-xl bg-gray-200 dark:bg-zinc-800 font-medium text-xs text-gray-700 dark:text-gray-300">بستن</button>
+                <button onclick="printA5Passport()" class="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-indigo-600/30">
+                    <i class="ph-bold ph-printer text-base"></i>
+                    <span>پرینت شناسنامه (قطع A5)</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- مودال ریست فرم -->
+    <!-- کانتینر مخفی فقط جهت چاپ A5 بدون المان‌های اضافی سایت -->
+    <div id="printableA5Area" class="hidden"></div>
+
+    <!-- مودال تایید ریست فرم -->
     <div id="resetModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-xs rounded-2xl p-5 shadow-2xl space-y-3.5 text-center">
             <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center mx-auto text-2xl">
@@ -191,7 +273,7 @@
         </div>
     </div>
 
-    <!-- مودال پیش‌نمایش -->
+    <!-- مودال پیش‌نمایش جدول کلی -->
     <div id="previewModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center transition-opacity">
         <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-2xl max-h-[85vh] rounded-t-3xl sm:rounded-2xl flex flex-col shadow-2xl overflow-hidden">
             <div class="p-4 border-b border-gray-200 dark:border-zinc-800 flex items-center justify-between">
@@ -220,7 +302,7 @@
             <h3 class="font-bold text-base text-gray-900 dark:text-white">افزودن تجهیز دلخواه</h3>
             <div>
                 <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">نام یا عنوان تجهیز:</label>
-                <input type="text" id="newItemNameInput" placeholder="مثلاً: هارد اکسترنال..." 
+                <input type="text" id="newItemNameInput" placeholder="مثلاً: هارد اکسترنال، اسکنر..." 
                     class="w-full bg-gray-100 dark:bg-zinc-800 rounded-xl px-3 py-2.5 text-gray-900 dark:text-white border border-transparent focus:border-blue-500 outline-none">
             </div>
             <div class="flex items-center justify-end gap-2 pt-2">
@@ -230,88 +312,86 @@
         </div>
     </div>
 
-    <canvas id="preprocessCanvas" class="hidden"></canvas>
-
     <script>
         const defaultCaravans = [
             {
                 id: 'c_pezhvak_comp', side: 'left', title: 'کمپانی من پژواک', subtitle: 'سطرهای ۵ تا ۱۴ (ستون چپ)', startRow: 5,
                 items: [
-                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' }, { name: 'تقویت انتن', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                    { name: 'کیس', model: '', desc: '' }, { name: 'مانیتور', model: '', desc: '' },
+                    { name: 'موس و کیبورد', model: '', desc: '' }, { name: 'تلفن', model: '', desc: '' },
+                    { name: 'اکسس پوینت', model: '', desc: '' }, { name: 'پرینتر', model: '', desc: '' },
+                    { name: 'اسپیکر', model: '', desc: '' }, { name: 'تقویت انتن', model: '', desc: '' },
+                    { name: '', model: '', desc: '' }, { name: '', model: '', desc: '' }
                 ]
             },
             {
                 id: 'c_pasargad_comp', side: 'right', title: 'کمپانی من پاسارگاد', subtitle: 'سطرهای ۵ تا ۱۴ (ستون راست)', startRow: 5,
                 items: [
-                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' }, { name: '', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                    { name: 'کیس', model: '', desc: '' }, { name: 'مانیتور', model: '', desc: '' },
+                    { name: 'موس و کیبورد', model: '', desc: '' }, { name: 'تلفن', model: '', desc: '' },
+                    { name: 'اکسس پوینت', model: '', desc: '' }, { name: 'پرینتر', model: '', desc: '' },
+                    { name: 'اسپیکر', model: '', desc: '' }, { name: '', model: '', desc: '' },
+                    { name: '', model: '', desc: '' }, { name: '', model: '', desc: '' }
                 ]
             },
             {
                 id: 'c_pezhvak_geo', side: 'left', title: 'زمین شناس پژواک', subtitle: 'سطرهای ۱۸ تا ۲۵ (ستون چپ)', startRow: 18,
                 items: [
-                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                    { name: 'کیس', model: '', desc: '' }, { name: 'مانیتور', model: '', desc: '' },
+                    { name: 'موس و کیبورد', model: '', desc: '' }, { name: 'تلفن', model: '', desc: '' },
+                    { name: 'اکسس پوینت', model: '', desc: '' }, { name: 'پرینتر', model: '', desc: '' },
+                    { name: 'اسپیکر', model: '', desc: '' }, { name: '', model: '', desc: '' }
                 ]
             },
             {
                 id: 'c_pasargad_geo', side: 'right', title: 'زمین شناس پاسارگاد', subtitle: 'سطرهای ۱۸ تا ۲۵ (ستون راست)', startRow: 18,
                 items: [
-                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                    { name: 'کیس', model: '', desc: '' }, { name: 'مانیتور', model: '', desc: '' },
+                    { name: 'موس و کیبورد', model: '', desc: '' }, { name: 'تلفن', model: '', desc: '' },
+                    { name: 'اکسس پوینت', model: '', desc: '' }, { name: 'پرینتر', model: '', desc: '' },
+                    { name: 'اسپیکر', model: '', desc: '' }, { name: '', model: '', desc: '' }
                 ]
             },
             {
                 id: 'c_pezhvak_sup', side: 'left', title: 'پشتیبانی پژواک', subtitle: 'سطرهای ۲۹ تا ۳۶ (ستون چپ)', startRow: 29,
                 items: [
-                    { name: 'کیس', count: '', desc: '' }, { name: 'مانیتور', count: '', desc: '' },
-                    { name: 'موس و کیبورد', count: '', desc: '' }, { name: 'تلفن', count: '', desc: '' },
-                    { name: 'اکسس پوینت', count: '', desc: '' }, { name: 'پرینتر', count: '', desc: '' },
-                    { name: 'اسپیکر', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                    { name: 'کیس', model: '', desc: '' }, { name: 'مانیتور', model: '', desc: '' },
+                    { name: 'موس و کیبورد', model: '', desc: '' }, { name: 'تلفن', model: '', desc: '' },
+                    { name: 'اکسس پوینت', model: '', desc: '' }, { name: 'پرینتر', model: '', desc: '' },
+                    { name: 'اسپیکر', model: '', desc: '' }, { name: '', model: '', desc: '' }
                 ]
             },
             {
                 id: 'c_pezhvak_rest', side: 'right', title: 'استراحت پژواک', subtitle: 'سطرهای ۲۹ تا ۳۲ (ستون راست)', startRow: 29,
                 items: [
-                    { name: 'تلفن', count: '', desc: '' }, { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }
+                    { name: 'تلفن', model: '', desc: '' }, { name: 'اکسس پوینت', model: '', desc: '' },
+                    { name: '', model: '', desc: '' }, { name: '', model: '', desc: '' }
                 ]
             },
             {
                 id: 'c_pasargad_rest', side: 'right', title: 'استراحت پاسارگاد', subtitle: 'سطرهای ۳۴ تا ۳۶ (ستون راست)', startRow: 34,
                 items: [
-                    { name: 'تلفن', count: '', desc: '' }, { name: 'اکسس پوینت', count: '', desc: '' },
-                    { name: '', count: '', desc: '' }
+                    { name: 'تلفن', model: '', desc: '' }, { name: 'اکسس پوینت', model: '', desc: '' },
+                    { name: '', model: '', desc: '' }
                 ]
             },
             {
                 id: 'c_custom_left', side: 'left', title: 'کاروان متفرقه ۱', subtitle: 'سطرهای ۳۸ تا ۴۰ (ستون چپ)', startRow: 38,
-                items: [ { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' } ]
+                items: [ { name: '', model: '', desc: '' }, { name: '', model: '', desc: '' }, { name: '', model: '', desc: '' } ]
             },
             {
                 id: 'c_custom_right', side: 'right', title: 'کاروان متفرقه ۲', subtitle: 'سطرهای ۳۸ تا ۴۰ (ستون راست)', startRow: 38,
-                items: [ { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' }, { name: '', count: '', desc: '' } ]
+                items: [ { name: '', model: '', desc: '' }, { name: '', model: '', desc: '' }, { name: '', model: '', desc: '' } ]
             }
         ];
 
         let appData = { rigName: '', caravans: JSON.parse(JSON.stringify(defaultCaravans)) };
         let activeCaravanId = defaultCaravans[0].id;
-        let scanTarget = { caravanId: null, itemIndex: null };
+        let qrGeneratorInstance = null;
 
         function initApp() {
             try {
-                const saved = localStorage.getItem('rig_inventory_data_v6');
+                const saved = localStorage.getItem('rig_inventory_data_v8');
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     if (parsed.caravans && parsed.caravans.length > 0) appData = parsed;
@@ -355,7 +435,7 @@
 
             appData.caravans.forEach(caravan => {
                 const isActive = caravan.id === activeCaravanId;
-                const filledCount = caravan.items.filter(i => (i.count !== '' && i.count !== 0) || i.desc || i.name).length;
+                const filledCount = caravan.items.filter(i => (i.model && i.model.trim() !== '') || (i.desc && i.desc.trim() !== '') || (i.name && i.name.trim() !== '')).length;
                 
                 const tab = document.createElement('button');
                 tab.onclick = () => selectTab(caravan.id);
@@ -382,7 +462,7 @@
             document.getElementById('currentCaravanTitle').textContent = caravan.title;
             document.getElementById('currentCaravanSubtitle').textContent = caravan.subtitle;
 
-            const filledCount = caravan.items.filter(i => (i.count !== '' && i.count != 0) || i.desc).length;
+            const filledCount = caravan.items.filter(i => (i.model && i.model.trim() !== '') || (i.desc && i.desc.trim() !== '')).length;
             document.getElementById('currentFilledCount').textContent = `${filledCount} پر شده`;
 
             const listContainer = document.getElementById('equipmentList');
@@ -402,253 +482,30 @@
                                 : `<span class="font-bold text-sm text-gray-900 dark:text-gray-100">${item.name}</span>`
                             }
                         </div>
-
-                        <div class="flex items-center bg-gray-100 dark:bg-zinc-800/90 rounded-xl p-1 border border-gray-200/50 dark:border-zinc-700/50">
-                            <button onclick="decrementCount('${caravan.id}', ${index})" class="counter-btn w-8 h-8 rounded-lg bg-white dark:bg-zinc-700 text-gray-700 dark:text-gray-200 flex items-center justify-center shadow-sm">
-                                <i class="ph-bold ph-minus text-xs"></i>
-                            </button>
-                            <input type="text" inputmode="numeric" pattern="[0-9]*" value="${item.count !== '' ? item.count : ''}" 
-                                placeholder="۰"
-                                oninput="updateItemCount('${caravan.id}', ${index}, this.value)"
-                                class="w-11 text-center bg-transparent font-bold text-base text-gray-900 dark:text-white outline-none">
-                            <button onclick="incrementCount('${caravan.id}', ${index})" class="counter-btn w-8 h-8 rounded-lg bg-white dark:bg-zinc-700 text-gray-700 dark:text-gray-200 flex items-center justify-center shadow-sm">
-                                <i class="ph-bold ph-plus text-xs"></i>
-                            </button>
-                        </div>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <div class="relative flex-1">
-                            <input type="text" id="desc_input_${caravan.id}_${index}" value="${escapeHtml(item.desc || '')}" oninput="updateItemDesc('${caravan.id}', ${index}, this.value)"
-                                placeholder="توضیحات یا شماره اموال..."
-                                autocorrect="off" autocapitalize="off" enterkeyhint="done"
+                    <!-- ردیف دو فیلد: مدل و توضیحات -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <input type="text" value="${escapeHtml(item.model || '')}" oninput="updateItemModel('${caravan.id}', ${index}, this.value)"
+                                placeholder="مدل تجهیز (مثلاً HP، Core i5...)"
                                 class="w-full bg-gray-50 dark:bg-zinc-900/60 text-xs text-gray-800 dark:text-gray-200 rounded-xl px-3 py-2.5 border border-gray-200/60 dark:border-zinc-800 outline-none focus:border-blue-500 transition placeholder-gray-400">
                         </div>
-                        <button onclick="triggerPropertyScan('${caravan.id}', ${index})" title="اسکن آفلاین برچسب اموال" class="action-btn flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-bold border border-blue-200/60 dark:border-blue-800/40 shadow-sm">
-                            <i class="ph-bold ph-camera text-base"></i>
-                            <span class="hidden sm:inline">اسکن اموال</span>
-                        </button>
+                        <div>
+                            <input type="text" value="${escapeHtml(item.desc || '')}" oninput="updateItemDesc('${caravan.id}', ${index}, this.value)"
+                                placeholder="توضیحات یا شماره اموال..."
+                                class="w-full bg-gray-50 dark:bg-zinc-900/60 text-xs text-gray-800 dark:text-gray-200 rounded-xl px-3 py-2.5 border border-gray-200/60 dark:border-zinc-800 outline-none focus:border-blue-500 transition placeholder-gray-400">
+                        </div>
                     </div>
                 `;
                 listContainer.appendChild(card);
             });
         }
 
-        function triggerPropertyScan(caravanId, index) {
-            scanTarget.caravanId = caravanId;
-            scanTarget.itemIndex = index;
-
-            const fileInput = document.getElementById('cameraFileInput');
-            fileInput.value = '';
-            fileInput.click();
-        }
-
-        function handleImageCaptured(event) {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-
-            openOcrModal();
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const detectedDigits = extractRealTitrDigits(img);
-                    document.getElementById('scannedCodeValue').value = detectedDigits;
-                    document.getElementById('ocrProgressStatus').textContent = 'کد شناسایی شد:';
-                    document.getElementById('scannedResultBox').classList.remove('hidden');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function extractRealTitrDigits(img) {
-            const canvas = document.getElementById('preprocessCanvas');
-            const ctx = canvas.getContext('2d', { willReadFrequently: true });
-            
-            const maxW = 800;
-            const scale = Math.min(1, maxW / img.width);
-            const w = Math.round(img.width * scale);
-            const h = Math.round(img.height * scale);
-            canvas.width = w;
-            canvas.height = h;
-            ctx.drawImage(img, 0, 0, w, h);
-
-            const imgData = ctx.getImageData(0, 0, w, h);
-            const d = imgData.data;
-
-            const gray = new Uint8Array(w * h);
-            let sum = 0;
-            for (let i = 0; i < d.length; i += 4) {
-                const g = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
-                gray[i / 4] = g;
-                sum += g;
-            }
-
-            const threshold = (sum / gray.length) * 0.85;
-            const bin = new Uint8Array(w * h);
-            for (let i = 0; i < gray.length; i++) {
-                bin[i] = gray[i] < threshold ? 1 : 0;
-            }
-
-            const rowDensity = new Int32Array(h);
-            for (let y = 0; y < h; y++) {
-                let rSum = 0;
-                for (let x = 0; x < w; x++) rSum += bin[y * w + x];
-                rowDensity[y] = rSum;
-            }
-
-            let startY = 0, endY = h - 1, maxDensity = 0;
-            for (let y = 0; y < h; y++) {
-                if (rowDensity[y] > maxDensity) maxDensity = rowDensity[y];
-            }
-            const minRowThresh = maxDensity * 0.2;
-            for (let y = Math.round(h * 0.2); y < h; y++) {
-                if (rowDensity[y] > minRowThresh) { startY = y; break; }
-            }
-            for (let y = h - 1; y >= startY; y--) {
-                if (rowDensity[y] > minRowThresh) { endY = y; break; }
-            }
-
-            const colDensity = new Int32Array(w);
-            for (let x = 0; x < w; x++) {
-                let cSum = 0;
-                for (let y = startY; y <= endY; y++) cSum += bin[y * w + x];
-                colDensity[x] = cSum;
-            }
-
-            const segments = [];
-            let inSegment = false, segStart = 0;
-            const minColThresh = (endY - startY) * 0.05;
-
-            for (let x = 0; x < w; x++) {
-                if (colDensity[x] > minColThresh) {
-                    if (!inSegment) { inSegment = true; segStart = x; }
-                } else {
-                    if (inSegment) {
-                        inSegment = false;
-                        const segW = x - segStart;
-                        if (segW >= 4 && segW < w * 0.3) {
-                            segments.push({ startX: segStart, endX: x, w: segW });
-                        }
-                    }
-                }
-            }
-
-            let resultDigits = "";
-            for (const seg of segments) {
-                const segH = endY - startY;
-                const aspect = seg.w / segH;
-                
-                let topCount = 0, midCount = 0, bottomCount = 0, totalBlack = 0;
-                const oneThirdY = startY + Math.round(segH * 0.33);
-                const twoThirdY = startY + Math.round(segH * 0.66);
-
-                for (let x = seg.startX; x < seg.endX; x++) {
-                    for (let y = startY; y <= endY; y++) {
-                        if (bin[y * w + x] === 1) {
-                            totalBlack++;
-                            if (y < oneThirdY) topCount++;
-                            else if (y < twoThirdY) midCount++;
-                            else bottomCount++;
-                        }
-                    }
-                }
-
-                if (totalBlack < 15) continue;
-
-                if (seg.w < segH * 0.45 && segH < (h * 0.18)) {
-                    resultDigits += "۰";
-                } else if (aspect < 0.32) {
-                    resultDigits += "۱";
-                } else if (topCount > bottomCount * 1.6 && bottomCount < totalBlack * 0.25) {
-                    resultDigits += "۷";
-                } else if (bottomCount > topCount * 1.6) {
-                    resultDigits += "۸";
-                } else if (aspect > 0.45 && aspect < 0.75 && midCount > topCount) {
-                    resultDigits += "۵";
-                } else if (aspect >= 0.45 && topCount > midCount) {
-                    resultDigits += (seg.w > segH * 0.6) ? "۳" : "۲";
-                } else {
-                    resultDigits += "۲";
-                }
-            }
-
-            return resultDigits.length >= 4 ? resultDigits : "۱۳۰۰۲۲۵۷";
-        }
-
-        function openOcrModal() {
-            document.getElementById('ocrLoadingModal').classList.remove('hidden');
-            document.getElementById('scannedResultBox').classList.add('hidden');
-            document.getElementById('ocrProgressStatus').textContent = 'در حال اسکن آفلاین و تطبیق الگو...';
-        }
-
-        function closeOcrModal() {
-            document.getElementById('ocrLoadingModal').classList.add('hidden');
-        }
-
-        function confirmScannedCode() {
-            const code = document.getElementById('scannedCodeValue').value.trim();
-            if (code) {
-                applyPropertyNumberToItem(code);
-                showToast(`شماره اموال درج شد: ${code}`);
-            }
-            closeOcrModal();
-        }
-
-        function applyPropertyNumberToItem(propertyCode) {
-            const { caravanId, itemIndex } = scanTarget;
-            if (!caravanId || itemIndex === null) return;
-
+        function updateItemModel(caravanId, index, value) {
             const caravan = appData.caravans.find(c => c.id === caravanId);
             if (!caravan) return;
-
-            const currentDesc = caravan.items[itemIndex].desc || '';
-            const newSnippet = `اموال: ${propertyCode}`;
-
-            if (currentDesc.trim() === '') {
-                caravan.items[itemIndex].desc = newSnippet;
-            } else if (!currentDesc.includes(propertyCode)) {
-                caravan.items[itemIndex].desc = `${currentDesc} - ${newSnippet}`;
-            }
-
-            if (caravan.items[itemIndex].count === '' || caravan.items[itemIndex].count == 0) {
-                caravan.items[itemIndex].count = 1;
-            }
-
-            persistData();
-            renderActiveCaravan();
-            renderTabs();
-            updateTotalSummary();
-        }
-
-        function incrementCount(caravanId, index) {
-            const caravan = appData.caravans.find(c => c.id === caravanId);
-            if (!caravan) return;
-            let current = parseInt(caravan.items[index].count, 10);
-            if (isNaN(current)) current = 0;
-            caravan.items[index].count = current + 1;
-            onDataChanged();
-        }
-
-        function decrementCount(caravanId, index) {
-            const caravan = appData.caravans.find(c => c.id === caravanId);
-            if (!caravan) return;
-            let current = parseInt(caravan.items[index].count, 10);
-            if (isNaN(current) || current <= 0) {
-                caravan.items[index].count = '';
-            } else {
-                caravan.items[index].count = current - 1 === 0 ? '' : current - 1;
-            }
-            onDataChanged();
-        }
-
-        function updateItemCount(caravanId, index, value) {
-            const caravan = appData.caravans.find(c => c.id === caravanId);
-            if (!caravan) return;
-            const cleaned = value.replace(/[^\d]/g, '');
-            caravan.items[index].count = cleaned !== '' ? parseInt(cleaned, 10) : '';
+            caravan.items[index].model = value;
             onDataChanged(false);
         }
 
@@ -674,14 +531,14 @@
                 renderTabs();
             } else {
                 const caravan = appData.caravans.find(c => c.id === activeCaravanId);
-                const filledCount = caravan.items.filter(i => (i.count !== '' && i.count != 0) || i.desc).length;
+                const filledCount = caravan.items.filter(i => (i.model && i.model.trim() !== '') || (i.desc && i.desc.trim() !== '')).length;
                 document.getElementById('currentFilledCount').textContent = `${filledCount} پر شده`;
             }
         }
 
         function persistData() {
             try {
-                localStorage.setItem('rig_inventory_data_v6', JSON.stringify(appData));
+                localStorage.setItem('rig_inventory_data_v8', JSON.stringify(appData));
             } catch (e) {}
         }
 
@@ -689,7 +546,7 @@
             let total = 0;
             appData.caravans.forEach(c => {
                 c.items.forEach(i => {
-                    if ((i.count !== '' && i.count != 0) || (i.desc && i.desc.trim() !== '') || (i.name && i.name.trim() !== '')) {
+                    if ((i.model && i.model.trim() !== '') || (i.desc && i.desc.trim() !== '') || (i.name && i.name.trim() !== '')) {
                         total++;
                     }
                 });
@@ -697,40 +554,69 @@
             document.getElementById('totalItemsSummary').textContent = `${total} سطر دارای اطلاعات`;
         }
 
-        function openResetConfirmModal() { document.getElementById('resetModal').classList.remove('hidden'); }
-        function closeResetConfirmModal() { document.getElementById('resetModal').classList.add('hidden'); }
+        // ====================== شناسنامه اتاق و بارکد QR (بدون تاثیر در اکسل) ======================
 
-        function executeResetForm() {
-            appData = { rigName: '', caravans: JSON.parse(JSON.stringify(defaultCaravans)) };
-            persistData();
-            document.getElementById('rigNameInput').value = '';
-            closeResetConfirmModal();
-            renderTabs();
-            renderActiveCaravan();
-            updateTotalSummary();
-            showToast('تمام اطلاعات ریست شد و فرم خام گردید.');
-        }
-
-        function promptAddNewItem() {
-            document.getElementById('newItemNameInput').value = '';
-            document.getElementById('addItemModal').classList.remove('hidden');
-            setTimeout(() => document.getElementById('newItemNameInput').focus(), 150);
-        }
-
-        function closeAddItemModal() { document.getElementById('addItemModal').classList.add('hidden'); }
-
-        function submitNewItem() {
-            const name = document.getElementById('newItemNameInput').value.trim();
+        function openRoomPassportModal() {
             const caravan = appData.caravans.find(c => c.id === activeCaravanId);
-            if (caravan) {
-                caravan.items.push({ name: name, count: '', desc: '' });
-                persistData();
-                renderActiveCaravan();
-                renderTabs();
-                updateTotalSummary();
+            if (!caravan) return;
+
+            const rigName = appData.rigName ? appData.rigName.trim() : 'دستگاه حفاری نامشخص';
+            document.getElementById('passportRigTitle').textContent = `دستگاه حفاری: ${rigName}`;
+            document.getElementById('passportCaravanTag').textContent = caravan.title;
+            document.getElementById('passportPrintDate').textContent = new Date().toLocaleDateString('fa-IR');
+
+            const tbody = document.getElementById('passportTableBody');
+            tbody.innerHTML = '';
+
+            const validItems = caravan.items.filter(i => (i.name && i.name.trim() !== '') || (i.model && i.model.trim() !== '') || (i.desc && i.desc.trim() !== ''));
+
+            let qrContent = `[شناسنامه اتاق]\nدکل: ${rigName}\nموقعیت: ${caravan.title}\n`;
+
+            if (validItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-gray-500 border border-gray-400">هیچ تجهیزاتی برای این کاروان ثبت نشده است.</td></tr>`;
+                qrContent += 'تجهیزاتی ثبت نشده است.';
+            } else {
+                validItems.forEach((it, idx) => {
+                    const row = document.createElement('tr');
+                    row.className = idx % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                    row.innerHTML = `
+                        <td class="border border-gray-400 p-1.5 text-center font-bold">${idx + 1}</td>
+                        <td class="border border-gray-400 p-1.5 font-bold">${escapeHtml(it.name || '-')}</td>
+                        <td class="border border-gray-400 p-1.5 text-blue-800">${escapeHtml(it.model || '-')}</td>
+                        <td class="border border-gray-400 p-1.5">${escapeHtml(it.desc || '-')}</td>
+                    `;
+                    tbody.appendChild(row);
+                    qrContent += `${idx + 1}. ${it.name || 'مورد'} | مدل: ${it.model || '-'} | ${it.desc || '-'}\n`;
+                });
             }
-            closeAddItemModal();
+
+            // تولید QR Code کاملاً آفلاین
+            const qrContainer = document.getElementById('passportQrCode');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: qrContent,
+                width: 104,
+                height: 104,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            document.getElementById('passportModal').classList.remove('hidden');
         }
+
+        function closePassportModal() {
+            document.getElementById('passportModal').classList.add('hidden');
+        }
+
+        function printA5Passport() {
+            const content = document.getElementById('passportA5Container').innerHTML;
+            const printArea = document.getElementById('printableA5Area');
+            printArea.innerHTML = content;
+            window.print();
+        }
+
+        // ====================== خروجی ۱۰۰٪ دقیق اکسل (کاملاً بدون QR و شناسنامه) ======================
 
         async function generateExcel() {
             if (typeof ExcelJS === 'undefined') {
@@ -741,7 +627,7 @@
             try {
                 showToast('در حال ساخت فایل اکسل هماهنگ با قالب دکل...');
                 const workbook = new ExcelJS.Workbook();
-                workbook.creator = 'Rig Inventory Scanner';
+                workbook.creator = 'Rig Inventory';
                 workbook.created = new Date();
 
                 const sheet = workbook.addWorksheet('Sheet1', {
@@ -750,15 +636,15 @@
 
                 sheet.columns = [
                     { key: 'colA', width: 2 },
-                    { key: 'colB', width: 6 },
-                    { key: 'colC', width: 16 },
-                    { key: 'colD', width: 6 },
-                    { key: 'colE', width: 22 },
-                    { key: 'colF', width: 2.5 },
-                    { key: 'colG', width: 6 },
-                    { key: 'colH', width: 16 },
-                    { key: 'colI', width: 6 },
-                    { key: 'colJ', width: 22 }
+                    { key: 'colB', width: 6 },     // ردیف چپ
+                    { key: 'colC', width: 16 },    // تجهیزات چپ
+                    { key: 'colD', width: 14 },    // مدل چپ
+                    { key: 'colE', width: 22 },    // توضیحات چپ
+                    { key: 'colF', width: 2.5 },   // ستون فاصله
+                    { key: 'colG', width: 6 },     // ردیف راست
+                    { key: 'colH', width: 16 },    // تجهیزات راست
+                    { key: 'colI', width: 14 },    // مدل راست
+                    { key: 'colJ', width: 22 }     // توضیحات راست
                 ];
 
                 for (let i = 1; i <= 40; i++) {
@@ -778,6 +664,7 @@
                     right: { style: 'thin', color: { argb: 'FF000000' } }
                 };
 
+                // عنوان دکل حفاری
                 sheet.mergeCells('B1:J1');
                 const titleCell = sheet.getCell('B1');
                 const enteredRig = appData.rigName ? appData.rigName.trim() : '';
@@ -808,7 +695,7 @@
                         const cIdx = col === 'B' ? 2 : 7;
                         sheet.getCell(s.rowH, cIdx).value = 'ردیف';
                         sheet.getCell(s.rowH, cIdx + 1).value = 'تجهیزات';
-                        sheet.getCell(s.rowH, cIdx + 2).value = 'تعداد';
+                        sheet.getCell(s.rowH, cIdx + 2).value = 'مدل';
                         sheet.getCell(s.rowH, cIdx + 3).value = 'توضیحات';
                         for (let k = 0; k < 4; k++) {
                             sheet.getCell(s.rowH, cIdx + k).font = headerFont;
@@ -823,6 +710,7 @@
                 restPasCell.font = headerFont;
                 restPasCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
+                // نگاشت دقیق داده‌های فرم در سلول‌ها
                 appData.caravans.forEach(caravan => {
                     const isLeft = caravan.side === 'left';
                     const colStart = isLeft ? 2 : 7;
@@ -833,14 +721,8 @@
                         if (curRow <= 40) {
                             sheet.getCell(curRow, colStart).value = itemIdx + 1;
                             sheet.getCell(curRow, colStart + 1).value = item.name || '';
-                            
-                            const q = item.count;
-                            if (q !== '' && q !== undefined) {
-                                sheet.getCell(curRow, colStart + 2).value = isNaN(q) ? q : Number(q);
-                            }
-                            if (item.desc) {
-                                sheet.getCell(curRow, colStart + 3).value = item.desc;
-                            }
+                            sheet.getCell(curRow, colStart + 2).value = item.model || '';
+                            sheet.getCell(curRow, colStart + 3).value = item.desc || '';
                         }
                     });
                 });
@@ -899,7 +781,7 @@
             let html = `<div class="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl text-center font-bold text-sm text-blue-800 dark:text-blue-300">دستگاه حفاری: ${rig}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
 
             appData.caravans.forEach(caravan => {
-                const validItems = caravan.items.filter(i => (i.count !== '' && i.count != 0) || i.desc || i.name);
+                const validItems = caravan.items.filter(i => (i.model && i.model.trim() !== '') || (i.desc && i.desc.trim() !== '') || (i.name && i.name.trim() !== ''));
                 html += `
                     <div class="border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden">
                         <div class="bg-gray-100 dark:bg-zinc-800 p-2 font-bold flex justify-between">
@@ -911,7 +793,7 @@
                                 <tr>
                                     <th class="p-1.5 w-8">#</th>
                                     <th class="p-1.5">تجهیز</th>
-                                    <th class="p-1.5 w-12 text-center">تعداد</th>
+                                    <th class="p-1.5">مدل</th>
                                     <th class="p-1.5">توضیحات</th>
                                 </tr>
                             </thead>
@@ -925,7 +807,7 @@
                             <tr class="border-b border-gray-100 dark:border-zinc-800/50">
                                 <td class="p-1.5 text-gray-400">${idx + 1}</td>
                                 <td class="p-1.5 font-semibold">${item.name || '-'}</td>
-                                <td class="p-1.5 text-center font-bold text-blue-600 dark:text-blue-400">${item.count || '-'}</td>
+                                <td class="p-1.5 text-blue-600 dark:text-blue-400 font-medium">${item.model || '-'}</td>
                                 <td class="p-1.5 text-gray-500">${item.desc || '-'}</td>
                             </tr>
                         `;
@@ -939,6 +821,41 @@
         }
 
         function closePreviewModal() { document.getElementById('previewModal').classList.add('hidden'); }
+        function openResetConfirmModal() { document.getElementById('resetModal').classList.remove('hidden'); }
+        function closeResetConfirmModal() { document.getElementById('resetModal').classList.add('hidden'); }
+
+        function executeResetForm() {
+            appData = { rigName: '', caravans: JSON.parse(JSON.stringify(defaultCaravans)) };
+            persistData();
+            document.getElementById('rigNameInput').value = '';
+            closeResetConfirmModal();
+            renderTabs();
+            renderActiveCaravan();
+            updateTotalSummary();
+            showToast('تمام اطلاعات ریست شد و فرم خام گردید.');
+        }
+
+        function promptAddNewItem() {
+            document.getElementById('newItemNameInput').value = '';
+            document.getElementById('addItemModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('newItemNameInput').focus(), 150);
+        }
+
+        function closeAddItemModal() { document.getElementById('addItemModal').classList.add('hidden'); }
+
+        function submitNewItem() {
+            const name = document.getElementById('newItemNameInput').value.trim();
+            const caravan = appData.caravans.find(c => c.id === activeCaravanId);
+            if (caravan) {
+                caravan.items.push({ name: name, model: '', desc: '' });
+                persistData();
+                renderActiveCaravan();
+                renderTabs();
+                updateTotalSummary();
+            }
+            closeAddItemModal();
+        }
+
         function escapeHtml(text) {
             if (!text) return '';
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
