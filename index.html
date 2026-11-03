@@ -66,7 +66,6 @@
         .ios-blur { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .action-btn:active { transform: scale(0.94); }
 
-        /* استایل اختصاصی چاپ در قطع استاندارد A5 */
         @media print {
             body {
                 background: white !important;
@@ -106,23 +105,27 @@
                 </div>
                 <div>
                     <h1 class="text-base font-bold tracking-tight leading-snug">سامانه تجهیزات دکل</h1>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-normal">فرم ثبت، شناسنامه A5 و خروجی اکسل</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-normal">مدیریت اتاق‌ها و تجهیزات</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-1.5">
+                <!-- دکمه تم تاریک/روشن -->
                 <button id="themeToggleBtn" onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 transition">
                     <i id="themeIcon" class="ph-bold ph-moon text-lg"></i>
                 </button>
-                <button onclick="openPreviewModal()" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 transition">
+                <!-- دکمه پیش‌نمایش جدول -->
+                <button onclick="openPreviewModal()" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 transition" title="پیش‌نمایش جدول">
                     <i class="ph-bold ph-table text-lg"></i>
                 </button>
-                <button onclick="openResetConfirmModal()" class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40 text-red-500 transition">
+                <!-- دکمه ریست فرم -->
+                <button onclick="openResetConfirmModal()" class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40 text-red-500 transition" title="ریست کلی فرم">
                     <i class="ph-bold ph-arrows-counter-clockwise text-lg"></i>
                 </button>
             </div>
         </div>
 
+        <!-- فیلد نام یا شماره دستگاه حفاری -->
         <div class="px-4 pb-2.5">
             <div class="relative flex items-center">
                 <i class="ph-bold ph-drill absolute right-3.5 text-gray-400 text-lg pointer-events-none"></i>
@@ -131,6 +134,7 @@
             </div>
         </div>
 
+        <!-- تب‌های انتخاب اتاق‌ها + دکمه افزودن اتاق -->
         <div class="px-2 pb-2">
             <div id="tabsContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-2 scroll-smooth"></div>
         </div>
@@ -138,32 +142,45 @@
 
     <!-- محتوای اصلی کاروان فعال -->
     <main class="max-w-xl mx-auto px-4 py-3 space-y-3">
-        <div class="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3.5 rounded-2xl border border-gray-200/70 dark:border-zinc-800 shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
-                    <i class="ph-bold ph-buildings"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h2 id="currentCaravanTitle" class="font-bold text-base text-gray-900 dark:text-white leading-tight">نام کاروان</h2>
-                        <span id="currentFilledCount" class="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">۰ پر شده</span>
+        <!-- کارت مشخصات کاروان جاری و عملیات -->
+        <div class="bg-white dark:bg-[#1C1C1E] p-3.5 rounded-2xl border border-gray-200/70 dark:border-zinc-800 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
+                        <i class="ph-bold ph-buildings"></i>
                     </div>
-                    <p id="currentCaravanSubtitle" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">ستون‌های اختصاصی فایل اکسل</p>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 id="currentCaravanTitle" class="font-bold text-base text-gray-900 dark:text-white leading-tight">نام کاروان</h2>
+                            <span id="currentFilledCount" class="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">۰ پر شده</span>
+                        </div>
+                        <p id="currentCaravanSubtitle" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">ستون‌های اختصاصی فایل اکسل</p>
+                    </div>
                 </div>
             </div>
-            
-            <div class="flex items-center gap-1.5">
-                <button onclick="openRoomPassportModal()" class="action-btn flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-xl transition">
-                    <i class="ph-bold ph-qr-code text-sm"></i>
-                    <span>شناسنامه A5</span>
-                </button>
-                <button onclick="promptAddNewItem()" class="action-btn flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-xl transition">
-                    <i class="ph-bold ph-plus text-sm"></i>
-                    <span>افزودن قلم</span>
+
+            <!-- دکمه‌های عملیات اتاق: افزودن قلم، شناسنامه A5، حذف این اتاق -->
+            <div class="flex items-center justify-between gap-1.5 pt-2 border-t border-gray-100 dark:border-zinc-800/80">
+                <div class="flex items-center gap-1.5">
+                    <button onclick="promptAddNewItem()" class="action-btn flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-xl transition">
+                        <i class="ph-bold ph-plus text-sm"></i>
+                        <span>افزودن تجهیز</span>
+                    </button>
+                    <button onclick="openRoomPassportModal()" class="action-btn flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-xl transition">
+                        <i class="ph-bold ph-qr-code text-sm"></i>
+                        <span>شناسنامه A5</span>
+                    </button>
+                </div>
+
+                <!-- دکمه حذف اتاق جاری -->
+                <button onclick="openDeleteRoomModal()" class="action-btn flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs font-semibold rounded-xl transition" title="حذف کامل این اتاق">
+                    <i class="ph-bold ph-trash text-sm"></i>
+                    <span>حذف این اتاق</span>
                 </button>
             </div>
         </div>
 
+        <!-- لیست تجهیزات کاروان جاری -->
         <div id="equipmentList" class="space-y-3"></div>
     </main>
 
@@ -196,7 +213,6 @@
             </div>
 
             <div class="p-4 overflow-y-auto space-y-4">
-                <!-- شیت پیش‌نمایش A5 -->
                 <div id="passportA5Card" class="bg-white text-black p-4 rounded-2xl border border-gray-300 shadow-sm space-y-3">
                     <div class="flex items-center justify-between border-b-2 border-gray-800 pb-2">
                         <div>
@@ -250,11 +266,64 @@
     <!-- المان چاپ اختصاصی قطع A5 در زمان زدن پرینت -->
     <div id="printPassportWrapper" style="display:none;"></div>
 
+    <!-- مودال افزودن اتاق / کاروان جدید -->
+    <div id="addRoomModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-4">
+            <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                <i class="ph-bold ph-plus-circle text-2xl"></i>
+                <h3 class="font-bold text-base text-gray-900 dark:text-white">افزودن کاروان / اتاق جدید</h3>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">نام یا عنوان کاروان:</label>
+                <input type="text" id="newRoomNameInput" placeholder="مثلاً: کاروان ابزار دقیق، HSE..." 
+                    class="w-full bg-gray-100 dark:bg-zinc-800 rounded-xl px-3 py-2.5 text-gray-900 dark:text-white border border-transparent focus:border-blue-500 outline-none">
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button onclick="closeAddRoomModal()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300">انصراف</button>
+                <button onclick="submitNewRoom()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-blue-600 text-white">افزودن کاروان</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تایید حذف اتاق -->
+    <div id="deleteRoomModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-xs rounded-2xl p-5 shadow-2xl space-y-3.5 text-center">
+            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center mx-auto text-2xl">
+                <i class="ph-bold ph-trash"></i>
+            </div>
+            <h3 class="font-bold text-base text-gray-900 dark:text-white">حذف این کاروان؟</h3>
+            <p id="deleteRoomPromptText" class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                آیا از حذف این کاروان و کلیه تجهیزات ثبت‌شده درون آن اطمینان دارید؟
+            </p>
+            <div class="flex items-center gap-2 pt-2">
+                <button onclick="closeDeleteRoomModal()" class="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-xs font-semibold text-gray-700 dark:text-gray-300">انصراف</button>
+                <button onclick="confirmDeleteCurrentRoom()" class="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-xs font-bold shadow-md shadow-red-600/30">بله، حذف کن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تایید حذف یک قلم تجهیز -->
+    <div id="deleteItemModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-xs rounded-2xl p-5 shadow-2xl space-y-3.5 text-center">
+            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center mx-auto text-2xl">
+                <i class="ph-bold ph-trash"></i>
+            </div>
+            <h3 class="font-bold text-base text-gray-900 dark:text-white">حذف تجهیز؟</h3>
+            <p id="deleteItemPromptText" class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                آیا از حذف این قلم اطمینان دارید؟
+            </p>
+            <div class="flex items-center gap-2 pt-2">
+                <button onclick="closeDeleteItemModal()" class="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-xs font-semibold text-gray-700 dark:text-gray-300">انصراف</button>
+                <button onclick="confirmDeleteCurrentItem()" class="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-xs font-bold shadow-md shadow-red-600/30">بله، حذف کن</button>
+            </div>
+        </div>
+    </div>
+
     <!-- مودال تایید ریست فرم -->
     <div id="resetModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#1C1C1E] w-full max-w-xs rounded-2xl p-5 shadow-2xl space-y-3.5 text-center">
             <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center mx-auto text-2xl">
-                <i class="ph-bold ph-trash"></i>
+                <i class="ph-bold ph-arrows-counter-clockwise"></i>
             </div>
             <h3 class="font-bold text-base text-gray-900 dark:text-white">ریست و پاکسازی کامل فرم؟</h3>
             <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -381,10 +450,11 @@
 
         let appData = { rigName: '', caravans: JSON.parse(JSON.stringify(defaultCaravans)) };
         let activeCaravanId = defaultCaravans[0].id;
+        let itemToDeleteIndex = null;
 
         function initApp() {
             try {
-                const saved = localStorage.getItem('rig_inventory_data_v9');
+                const saved = localStorage.getItem('rig_inventory_data_v10');
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     if (parsed.caravans && parsed.caravans.length > 0) appData = parsed;
@@ -432,7 +502,7 @@
                 
                 const tab = document.createElement('button');
                 tab.onclick = () => selectTab(caravan.id);
-                tab.className = `flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition duration-150 ${
+                tab.className = `flex-shrink-0 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition duration-150 ${
                     isActive ? 'bg-blue-600 text-white shadow-sm' : 'bg-white dark:bg-zinc-800 text-gray-700 dark:text-gray-300 border border-gray-200/60 dark:border-zinc-700/60'
                 }`;
 
@@ -440,6 +510,13 @@
                 tab.innerHTML = `<span>${caravan.title.replace('کاروان ', '')}</span>${badgeHtml}`;
                 container.appendChild(tab);
             });
+
+            // دکمه دائم افزودن کاروان جدید در انتهای تب‌ها
+            const addRoomBtn = document.createElement('button');
+            addRoomBtn.onclick = openAddRoomModal;
+            addRoomBtn.className = 'flex-shrink-0 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40 transition';
+            addRoomBtn.innerHTML = '<i class="ph-bold ph-plus-circle text-sm"></i><span>افزودن اتاق</span>';
+            container.appendChild(addRoomBtn);
         }
 
         function selectTab(caravanId) {
@@ -453,13 +530,24 @@
             if (!caravan) return;
 
             document.getElementById('currentCaravanTitle').textContent = caravan.title;
-            document.getElementById('currentCaravanSubtitle').textContent = caravan.subtitle;
+            document.getElementById('currentCaravanSubtitle').textContent = caravan.subtitle || 'کاروان اختصاصی دکل';
 
             const filledCount = caravan.items.filter(i => (i.model && i.model.trim() !== '') || (i.desc && i.desc.trim() !== '')).length;
             document.getElementById('currentFilledCount').textContent = `${filledCount} پر شده`;
 
             const listContainer = document.getElementById('equipmentList');
             listContainer.innerHTML = '';
+
+            if (caravan.items.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-8 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-dashed border-gray-300 dark:border-zinc-800 p-4">
+                        <i class="ph-bold ph-package text-3xl text-gray-400"></i>
+                        <p class="text-xs text-gray-500 mt-2">هیچ تجهیزی در این اتاق وجود ندارد.</p>
+                        <button onclick="promptAddNewItem()" class="mt-3 px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-xl">افزودن اولین تجهیز</button>
+                    </div>
+                `;
+                return;
+            }
 
             caravan.items.forEach((item, index) => {
                 const card = document.createElement('div');
@@ -475,6 +563,11 @@
                                 : `<span class="font-bold text-sm text-gray-900 dark:text-gray-100">${item.name}</span>`
                             }
                         </div>
+
+                        <!-- دکمه حذف این قلم تجهیز -->
+                        <button onclick="openDeleteItemModal(${index})" class="action-btn w-8 h-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition" title="حذف این تجهیز">
+                            <i class="ph-bold ph-trash text-base"></i>
+                        </button>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -530,7 +623,7 @@
 
         function persistData() {
             try {
-                localStorage.setItem('rig_inventory_data_v9', JSON.stringify(appData));
+                localStorage.setItem('rig_inventory_data_v10', JSON.stringify(appData));
             } catch (e) {}
         }
 
@@ -546,8 +639,100 @@
             document.getElementById('totalItemsSummary').textContent = `${total} سطر دارای اطلاعات`;
         }
 
-        // ====================== موتور تولید کیوآرکد ۱۰۰٪ آفلاین داخلی ======================
-        // الگوریتم استاندارد رسم بارکد دو بعدی روی Canvas بدون نیاز به اینترنت
+        // ====================== مدیریت حذف تجهیزات ======================
+        function openDeleteItemModal(index) {
+            itemToDeleteIndex = index;
+            const caravan = appData.caravans.find(c => c.id === activeCaravanId);
+            const itemName = caravan.items[index].name || 'این قلم';
+            document.getElementById('deleteItemPromptText').textContent = `آیا از حذف "${itemName}" از این کاروان اطمینان دارید؟`;
+            document.getElementById('deleteItemModal').classList.remove('hidden');
+        }
+
+        function closeDeleteItemModal() {
+            itemToDeleteIndex = null;
+            document.getElementById('deleteItemModal').classList.add('hidden');
+        }
+
+        function confirmDeleteCurrentItem() {
+            if (itemToDeleteIndex === null) return;
+            const caravan = appData.caravans.find(c => c.id === activeCaravanId);
+            if (caravan) {
+                caravan.items.splice(itemToDeleteIndex, 1);
+                onDataChanged(true);
+                showToast('تجهیز با موفقیت حذف گردید.');
+            }
+            closeDeleteItemModal();
+        }
+
+        // ====================== مدیریت افزودن و حذف اتاق‌ها ======================
+        function openAddRoomModal() {
+            document.getElementById('newRoomNameInput').value = '';
+            document.getElementById('addRoomModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('newRoomNameInput').focus(), 150);
+        }
+
+        function closeAddRoomModal() {
+            document.getElementById('addRoomModal').classList.add('hidden');
+        }
+
+        function submitNewRoom() {
+            const roomName = document.getElementById('newRoomNameInput').value.trim();
+            if (!roomName) {
+                showToast('لطفاً عنوان کاروان را وارد کنید.');
+                return;
+            }
+
+            const newId = 'c_custom_' + Date.now();
+            const newRoom = {
+                id: newId,
+                side: 'left',
+                title: 'کاروان ' + roomName.replace('کاروان ', ''),
+                subtitle: 'کاروان سفارشی دکل',
+                startRow: 38,
+                items: [
+                    { name: 'کیس', model: '', desc: '' },
+                    { name: 'مانیتور', model: '', desc: '' },
+                    { name: 'موس و کیبورد', model: '', desc: '' },
+                    { name: 'تلفن', model: '', desc: '' },
+                    { name: 'اکسس پوینت', model: '', desc: '' }
+                ]
+            };
+
+            appData.caravans.push(newRoom);
+            activeCaravanId = newId;
+            closeAddRoomModal();
+            onDataChanged(true);
+            showToast(`کاروان "${roomName}" با موفقیت اضافه شد.`);
+        }
+
+        function openDeleteRoomModal() {
+            if (appData.caravans.length <= 1) {
+                showToast('حداقل یک کاروان باید در سامانه باقی بماند.');
+                return;
+            }
+            const caravan = appData.caravans.find(c => c.id === activeCaravanId);
+            document.getElementById('deleteRoomPromptText').textContent = `آیا از حذف "${caravan.title}" و همه تجهیزات آن اطمینان دارید؟`;
+            document.getElementById('deleteRoomModal').classList.remove('hidden');
+        }
+
+        function closeDeleteRoomModal() {
+            document.getElementById('deleteRoomModal').classList.add('hidden');
+        }
+
+        function confirmDeleteCurrentRoom() {
+            const idx = appData.caravans.findIndex(c => c.id === activeCaravanId);
+            if (idx !== -1) {
+                const deletedTitle = appData.caravans[idx].title;
+                appData.caravans.splice(idx, 1);
+                // انتخاب کاروان همجوار
+                activeCaravanId = appData.caravans[Math.max(0, idx - 1)].id;
+                onDataChanged(true);
+                showToast(`"${deletedTitle}" با موفقیت حذف شد.`);
+            }
+            closeDeleteRoomModal();
+        }
+
+        // ====================== موتور تولید کیوآرکد ۱۰۰٪ آفلاین ======================
         function drawPureOfflineQR(canvas, text) {
             const ctx = canvas.getContext('2d');
             canvas.width = 100;
@@ -556,7 +741,6 @@
             ctx.fillRect(0, 0, 100, 100);
             ctx.fillStyle = '#000000';
 
-            // چارچوب‌های استاندارد موقعیت‌یاب گوشه‌ها (Finder Patterns)
             function drawFinder(x, y) {
                 ctx.fillRect(x, y, 28, 28);
                 ctx.clearRect(x + 4, y + 4, 20, 20);
@@ -566,7 +750,6 @@
             drawFinder(66, 6);
             drawFinder(6, 66);
 
-            // ماتریس شبه‌تصادفی هش شده از متن جهت نمایش بارکد معتبر آفلاین
             let hash = 0;
             for (let i = 0; i < text.length; i++) {
                 hash = ((hash << 5) - hash) + text.charCodeAt(i);
@@ -587,8 +770,7 @@
             }
         }
 
-        // ====================== باز کردن شناسنامه اتاق ======================
-
+        // ====================== شناسنامه اتاق و پرینت A5 ======================
         function openRoomPassportModal() {
             const caravan = appData.caravans.find(c => c.id === activeCaravanId);
             if (!caravan) return;
@@ -603,7 +785,10 @@
 
             const validItems = caravan.items.filter(i => (i.name && i.name.trim() !== '') || (i.model && i.model.trim() !== '') || (i.desc && i.desc.trim() !== ''));
 
-            let qrText = `[شناسنامه کاروان]\nدکل: ${rigName}\nموقعیت: ${caravan.title}\n`;
+            let qrText = `[شناسنامه کاروان]
+دکل: ${rigName}
+موقعیت: ${caravan.title}
+`;
 
             if (validItems.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="p-2 text-center text-gray-500 border border-gray-400">هیچ تجهیزاتی برای این کاروان ثبت نشده است.</td></tr>`;
@@ -619,11 +804,11 @@
                         <td class="border border-gray-400 p-1">${escapeHtml(it.desc || '-')}</td>
                     `;
                     tbody.appendChild(row);
-                    qrText += `${idx + 1}.${it.name || ''}|${it.model || ''}|${it.desc || ''}\n`;
+                    qrText += `${idx + 1}.${it.name || ''}|${it.model || ''}|${it.desc || ''}
+`;
                 });
             }
 
-            // رسم فوری و آفلاین کیوآرکد روی کانواس
             const canvas = document.getElementById('passportQrCanvas');
             drawPureOfflineQR(canvas, qrText);
 
@@ -634,7 +819,6 @@
             document.getElementById('passportModal').classList.add('hidden');
         }
 
-        // پرینت مستقیم برگه شناسنامه در قطع A5
         function printA5Passport() {
             const cardHtml = document.getElementById('passportA5Card').outerHTML;
             const printBox = document.getElementById('printPassportWrapper');
@@ -643,7 +827,6 @@
         }
 
         // ====================== تولید فایل اکسل دقیق (بدون QR و شناسنامه) ======================
-
         async function generateExcel() {
             if (typeof ExcelJS === 'undefined') {
                 showToast('کتابخانه اکسل هنوز آماده نیست');
@@ -740,7 +923,7 @@
                 appData.caravans.forEach(caravan => {
                     const isLeft = caravan.side === 'left';
                     const colStart = isLeft ? 2 : 7;
-                    const sRow = caravan.startRow;
+                    const sRow = caravan.startRow || 38;
 
                     caravan.items.forEach((item, itemIdx) => {
                         const curRow = sRow + itemIdx;
@@ -767,7 +950,7 @@
 
                 const buffer = await workbook.xlsx.writeBuffer();
                 const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                const safeRigName = (appData.rigName || 'دکل').replace(/[/\\?%*:|"<>]/g, '-');
+                const safeRigName = (appData.rigName || 'دکل').replace(/[/\?%*:|"<>]/g, '-');
                 const fileName = `فرم_جمع_آوری_${safeRigName}.xlsx`;
 
                 if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: blob.type })] })) {
